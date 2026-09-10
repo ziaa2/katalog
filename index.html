@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Scan Harga</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+<style>
+  :root{
+    --bg:#0F1115;
+    --surface:#171A21;
+    --surface2:#1D212B;
+    --border:#262B36;
+    --text:#E7E9EE;
+    --text2:#8B92A5;
+    --accent:#5B8DEF;
+    --accent-dim:#5B8DEF26;
+    --warn:#F2A33D;
+    --danger:#E5637A;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-tap-highlight-color:transparent;padding-bottom:40px;
+  }
+  .wrap{max-width:480px;margin:0 auto;padding:20px 16px 8px;}
+
+  header{margin-bottom:16px;}
+  header h1{font-size:22px;font-weight:700;margin:0 0 4px;letter-spacing:-0.01em;}
+  header p{margin:0;font-size:13.5px;color:var(--text2);line-height:1.5;}
+
+  .warn-banner{
+    background:#3a2a12;border:1px solid var(--warn);color:var(--warn);
+    border-radius:12px;padding:10px 12px;font-size:12.5px;margin-bottom:14px;line-height:1.5;
+  }
+
+  .seg{display:flex;gap:6px;margin-bottom:16px;}
+  .seg button{
+    flex:1;background:var(--surface);border:1px solid var(--border);color:var(--text2);
+    font-size:13px;padding:10px;border-radius:10px;font-weight:600;font-family:inherit;cursor:pointer;
+  }
+  .seg button.active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);}
+
+  .scanner-box{
+    position:relative;width:100%;aspect-ratio:4/3;background:#000;
+    border-radius:16px;overflow:hidden;border:1px solid var(--border);
+  }
+  #interactive.viewport{width:100%;height:100%;}
+  #interactive video, #interactive canvas{width:100% !important;height:100% !important;object-fit:cover;}
+  .scan-guide{
+    position:absolute;top:32%;left:8%;right:8%;height:36%;
+    border:2px solid var(--accent);border-radius:10px;pointer-events:none;
+    transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  .scan-guide.locking{
+    border-color:var(--warn);
+    box-shadow:0 0 0 3px #F2A33D33;
+  }
+  .scan-hint{
+    position:absolute;bottom:10px;left:0;right:0;text-align:center;
+    font-size:11.5px;color:#fff;text-shadow:0 1px 2px #000;
+  }
+  .scan-progress{
+    position:absolute;top:8px;left:0;right:0;text-align:center;
+    font-size:11px;color:#fff;text-shadow:0 1px 2px #000;font-weight:600;
+  }
+
+  .row{display:flex;gap:8px;margin-top:12px;}
+  button{font-family:inherit;border:none;border-radius:12px;padding:11px 16px;font-size:14px;font-weight:600;cursor:pointer;}
+  .btn-primary{background:var(--accent);color:#0B0E14;flex:1;}
+  .btn-primary:active{opacity:.85;}
+  .btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border);}
+
+  .result-card{
+    margin-top:14px;background:var(--surface);border:1px solid var(--border);
+    border-radius:16px;padding:18px;text-align:center;
+  }
+  .result-name{font-size:15.5px;font-weight:700;}
+  .result-price{font-size:28px;font-weight:800;color:var(--accent);margin-top:6px;}
+  .result-barcode{font-size:11px;color:var(--text2);margin-top:6px;}
+  .result-actions{display:flex;gap:8px;margin-top:14px;}
+  .not-found{color:var(--warn);font-size:14.5px;font-weight:700;}
+
+  .search-input{
+    width:100%;background:var(--surface);border:1px solid var(--border);border-radius:12px;
+    padding:10px 12px;color:var(--text);font-size:13.5px;font-family:inherit;margin-bottom:10px;
+  }
+  .search-input:focus{outline:none;border-color:var(--accent);}
+
+  .item-list{margin-top:4px;}
+  .item-row{
+    display:flex;justify-content:space-between;align-items:center;
+    background:var(--surface);border:1px solid var(--border);border-radius:12px;
+    padding:10px 12px;margin-bottom:8px;gap:8px;
+  }
+  .item-row .info{flex:1;min-width:0;}
+  .item-row .name{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .item-row .barcode{font-size:11px;color:var(--text2);}
+  .item-row .price{font-size:14px;font-weight:700;color:var(--accent);white-space:nowrap;}
+  .item-actions{display:flex;gap:6px;flex-shrink:0;}
+  .item-actions button{padding:6px 9px;font-size:11.5px;border-radius:8px;}
+
+  .empty{text-align:center;color:var(--text2);font-size:13.5px;padding:30px 10px;line-height:1.6;}
+
+  .overlay{
+    position:fixed;inset:0;background:#000000aa;display:flex;align-items:center;
+    justify-content:center;padding:20px;z-index:50;
+  }
+  .form-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;width:100%;max-width:380px;}
+  .form-card h3{margin:0 0 14px;font-size:16px;}
+  .form-card .field{margin-bottom:10px;display:flex;flex-direction:column;gap:4px;}
+  .form-card .field label{font-size:12px;color:var(--text2);}
+  .form-card .field input{
+    background:var(--surface2);border:1px solid var(--border);border-radius:10px;
+    padding:9px 11px;color:var(--text);font-size:14px;font-family:inherit;
+  }
+  .form-card .field input:focus{outline:none;border-color:var(--accent);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Scan Harga</h1>
+    <p>Arahkan kamera ke barcode kemasan buat cek harga barang secara instan.</p>
+  </header>
+
+  <div class="warn-banner" id="httpsWarning" style="display:none;">
+    Kamera cuma bisa diakses lewat HTTPS (atau localhost). Kalau dibuka langsung dari file di HP, scan belum bisa jalan — upload dulu ke GitHub Pages atau hosting lain.
+  </div>
+
+  <div class="seg" id="modeSeg">
+    <button data-m="scan" class="active">Scan</button>
+    <button data-m="list">Daftar Barang</button>
+  </div>
+
+  <section id="scanSection">
+    <div class="scanner-box">
+      <div id="interactive" class="viewport"></div>
+      <div class="scan-guide" id="scanGuide"></div>
+      <div class="scan-progress" id="scanProgress"></div>
+      <div class="scan-hint">Posisikan barcode di dalam kotak, tahan diam sebentar</div>
+    </div>
+    <div class="row">
+      <button class="btn-primary" id="toggleScanBtn">Mulai Scan</button>
+    </div>
+    <div id="resultCard" class="result-card" style="display:none;"></div>
+  </section>
+
+  <section id="listSection" style="display:none;">
+    <input class="search-input" id="listSearch" placeholder="Cari nama barang atau barcode...">
+    <div class="row" style="margin-top:0;margin-bottom:12px;">
+      <button class="btn-primary" id="addManualBtn">+ Tambah Barang Manual</button>
+    </div>
+    <div id="itemList" class="item-list"></div>
+    <div class="empty" id="listEmpty" style="display:none;">Belum ada barang tersimpan.</div>
+  </section>
+
+</div>
+
+<div class="overlay" id="formOverlay" style="display:none;">
+  <div class="form-card">
+    <h3 id="formTitle">Tambah Barang</h3>
+    <div class="field"><label>Barcode</label><input id="fBarcode" placeholder="Hasil scan atau isi manual"></div>
+    <div class="field"><label>Nama Barang</label><input id="fName" placeholder="Contoh: Indomie Goreng"></div>
+    <div class="field"><label>Harga (Rp)</label><input id="fPrice" type="number" inputmode="numeric" placeholder="3500"></div>
+    <div class="row">
+      <button class="btn-primary" id="fSave">Simpan</button>
+      <button class="btn-ghost" id="fCancel">Batal</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const STORAGE_KEY = 'scan_harga_items_v1';
+  let scanning = false;
+
+  // ---------- konfirmasi kode (voting) biar ga ngaco ----------
+  // kode baru cuma diterima kalau kemunculan yang sama >= CONFIRM_COUNT
+  // dalam jendela buffer terakhir, dan ada jeda tenang sebelum kode berikutnya
+  const CONFIRM_COUNT = 4;      // butuh 4x baca sama sebelum dianggap valid
+  const BUFFER_SIZE = 6;        // dari 6 pembacaan terakhir
+  const COOLDOWN_MS = 2500;     // abaikan hasil baru sesaat setelah sukses
+  let codeBuffer = [];
+  let lastAcceptedCode = '';
+  let lastAcceptedTime = 0;
+  let editingKey = null;
+
+  const scanGuide = document.getElementById('scanGuide');
+  const scanProgress = document.getElementById('scanProgress');
+
+  function loadItems(){
+    try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+    catch(e){ return {}; }
+  }
+  function saveItems(items){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  }
+  function formatRupiah(n){
+    const num = Number(n) || 0;
+    return 'Rp' + num.toLocaleString('id-ID');
+  }
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // ---------- cek HTTPS ----------
+  const secureOk = location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+  if(!secureOk){
+    document.getElementById('httpsWarning').style.display = 'block';
+    document.getElementById('toggleScanBtn').disabled = true;
+    document.getElementById('toggleScanBtn').style.opacity = '0.5';
+  }
+
+  // ---------- mode switch ----------
+  const modeSeg = document.getElementById('modeSeg');
+  const scanSection = document.getElementById('scanSection');
+  const listSection = document.getElementById('listSection');
+
+  modeSeg.addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-m]');
+    if(!btn) return;
+    modeSeg.querySelectorAll('button').forEach(b => b.classList.toggle('active', b === btn));
+    if(btn.dataset.m === 'scan'){
+      scanSection.style.display = '';
+      listSection.style.display = 'none';
+    } else {
+      scanSection.style.display = 'none';
+      listSection.style.display = '';
+      stopScan();
+      renderList();
+    }
+  });
+
+  // ---------- scan ----------
+  const toggleScanBtn = document.getElementById('toggleScanBtn');
+  const resultCard = document.getElementById('resultCard');
+
+  function startScan(){
+    if(!secureOk) return;
+    resultCard.style.display = 'none';
+    codeBuffer = [];
+    scanProgress.textContent = '';
+    scanGuide.classList.remove('locking');
+
+    Quagga.init({
+      inputStream: {
+        name: 'Live',
+        type: 'LiveStream',
+        target: document.querySelector('#interactive'),
+        constraints: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
+        area: { top: '32%', right: '8%', left: '8%', bottom: '32%' } // fokus cuma di kotak panduan
+      },
+      locator: {
+        patchSize: 'medium',
+        halfSample: true
+      },
+      numOfWorkers: (navigator.hardwareConcurrency ? Math.min(navigator.hardwareConcurrency, 4) : 2),
+      frequency: 8, // jangan terlalu rapat, biar tiap hasil sempat dievaluasi
+      decoder: {
+        readers: ['ean_reader', 'ean_8_reader', 'upc_reader', 'upc_e_reader', 'code_128_reader'],
+        multiple: false
+      },
+      locate: true
+    }, function(err){
+      if(err){
+        alert('Gagal buka kamera: ' + err.message);
+        return;
+      }
+      Quagga.start();
+      scanning = true;
+      toggleScanBtn.textContent = 'Berhenti Scan';
+    });
+    Quagga.onDetected(onDetected);
+  }
+
+  function stopScan(){
+    if(scanning){
+      Quagga.offDetected(onDetected);
+      Quagga.stop();
+      scanning = false;
+      toggleScanBtn.textContent = 'Mulai Scan';
+    }
+    codeBuffer = [];
+    scanProgress.textContent = '';
+    scanGuide.classList.remove('locking');
+  }
+
+  function onDetected(result){
+    const code = result.codeResult.code;
+    if(!code) return;
+
+    const now = Date.now();
+    // cooldown: abaikan sejenak setelah kode berhasil dikonfirmasi
+    if(code === lastAcceptedCode && now - lastAcceptedTime < COOLDOWN_MS) return;
+
+    codeBuffer.push(code);
+    if(codeBuffer.length > BUFFER_SIZE) codeBuffer.shift();
+
+    // hitung kode yang paling sering muncul di buffer
+    const counts = {};
+    let bestCode = code, bestCount = 0;
+    for(const c of codeBuffer){
+      counts[c] = (counts[c] || 0) + 1;
+      if(counts[c] > bestCount){ bestCount = counts[c]; bestCode = c; }
+    }
+
+    scanGuide.classList.add('locking');
+    scanProgress.textContent = `Membaca... ${bestCount}/${CONFIRM_COUNT}`;
+
+    if(bestCount >= CONFIRM_COUNT){
+      lastAcceptedCode = bestCode;
+      lastAcceptedTime = now;
+      codeBuffer = [];
+      scanGuide.classList.remove('locking');
+      scanProgress.textContent = '';
+      showResult(bestCode);
+      stopScan();
+    }
+  }
+
+  toggleScanBtn.addEventListener('click', () => {
+    if(scanning) stopScan(); else startScan();
+  });
+
+  function showResult(code){
+    const items = loadItems();
+    const item = items[code];
+    resultCard.style.display = 'block';
+    if(item){
+      resultCard.innerHTML = `
+        <div class="result-name">${escapeHtml(item.name)}</div>
+        <div class="result-price">${formatRupiah(item.price)}</div>
+        <div class="result-barcode">Barcode: ${escapeHtml(code)}</div>
+        <div class="result-actions">
+          <button class="btn-primary" id="rEdit">Edit</button>
+          <button class="btn-ghost" id="rScanLagi">Scan Lagi</button>
+        </div>
+      `;
+      document.getElementById('rEdit').addEventListener('click', () => openForm(code));
+    } else {
+      resultCard.innerHTML = `
+        <div class="not-found">Barang belum terdaftar</div>
+        <div class="result-barcode">Barcode: ${escapeHtml(code)}</div>
+        <div class="result-actions">
+          <button class="btn-primary" id="rTambah">Tambah Barang Ini</button>
+          <button class="btn-ghost" id="rScanLagi">Scan Lagi</button>
+        </div>
+      `;
+      document.getElementById('rTambah').addEventListener('click', () => openForm(code));
+    }
+    document.getElementById('rScanLagi').addEventListener('click', () => {
+      resultCard.style.display = 'none';
+      startScan();
+    });
+  }
+
+  // ---------- daftar barang ----------
+  const itemListEl = document.getElementById('itemList');
+  const listEmpty = document.getElementById('listEmpty');
+  const listSearch = document.getElementById('listSearch');
+
+  function renderList(){
+    const items = loadItems();
+    const term = listSearch.value.trim().toLowerCase();
+    const rows = Object.entries(items)
+      .filter(([code, it]) => !term || it.name.toLowerCase().includes(term) || code.toLowerCase().includes(term))
+      .sort((a,b) => a[1].name.localeCompare(b[1].name));
+
+    itemListEl.innerHTML = '';
+    listEmpty.style.display = rows.length ? 'none' : 'block';
+
+    rows.forEach(([code, it]) => {
+      const row = document.createElement('div');
+      row.className = 'item-row';
+      row.innerHTML = `
+        <div class="info">
+          <div class="name">${escapeHtml(it.name)}</div>
+          <div class="barcode">${escapeHtml(code)}</div>
+        </div>
+        <div class="price">${formatRupiah(it.price)}</div>
+        <div class="item-actions">
+          <button class="btn-ghost" data-edit="${code}">Edit</button>
+          <button class="btn-ghost" data-del="${code}">Hapus</button>
+        </div>
+      `;
+      itemListEl.appendChild(row);
+    });
+
+    itemListEl.querySelectorAll('[data-edit]').forEach(b => {
+      b.addEventListener('click', () => openForm(b.dataset.edit));
+    });
+    itemListEl.querySelectorAll('[data-del]').forEach(b => {
+      b.addEventListener('click', () => {
+        if(confirm('Hapus barang ini?')){
+          const items = loadItems();
+          delete items[b.dataset.del];
+          saveItems(items);
+          renderList();
+        }
+      });
+    });
+  }
+
+  listSearch.addEventListener('input', renderList);
+  document.getElementById('addManualBtn').addEventListener('click', () => openForm(''));
+
+  // ---------- form tambah/edit ----------
+  const formOverlay = document.getElementById('formOverlay');
+  const formTitle = document.getElementById('formTitle');
+  const fBarcode = document.getElementById('fBarcode');
+  const fName = document.getElementById('fName');
+  const fPrice = document.getElementById('fPrice');
+
+  function openForm(code){
+    const items = loadItems();
+    const existing = code ? items[code] : null;
+    editingKey = code || null;
+    formTitle.textContent = existing ? 'Edit Barang' : 'Tambah Barang';
+    fBarcode.value = code || '';
+    fName.value = existing ? existing.name : '';
+    fPrice.value = existing ? existing.price : '';
+    formOverlay.style.display = 'flex';
+  }
+  function closeForm(){
+    formOverlay.style.display = 'none';
+    editingKey = null;
+  }
+
+  document.getElementById('fCancel').addEventListener('click', closeForm);
+  document.getElementById('fSave').addEventListener('click', () => {
+    const name = fName.value.trim();
+    const price = fPrice.value.trim();
+    if(!name || !price){
+      alert('Nama barang dan harga wajib diisi.');
+      return;
+    }
+    let key = fBarcode.value.trim();
+    if(!key) key = 'manual-' + Date.now().toString(36);
+
+    const items = loadItems();
+    if(editingKey && editingKey !== key) delete items[editingKey];
+    items[key] = { name, price: Number(price), ts: Date.now() };
+    saveItems(items);
+    closeForm();
+
+    if(scanSection.style.display !== 'none'){
+      showResult(key);
+    } else {
+      renderList();
+    }
+  });
+
+  renderList();
+</script>
+</body>
+</html>
