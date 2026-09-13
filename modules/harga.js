@@ -45,6 +45,9 @@ Zuna.register({
     logic: () => {
         const STORAGE_KEY = 'zuna_harga_v1';
         let scanning = false;
+        let detectionBuffer = [];
+        const REQUIRED_MATCHES = 4; // harus kebaca sama persis 4x berturut-turut baru dianggap valid
+        const MAX_ERROR = 0.15; // buang hasil baca yang kualitasnya jelek/meragukan
 
         const getDB = () => {
             const raw = localStorage.getItem(STORAGE_KEY);
@@ -54,13 +57,33 @@ Zuna.register({
 
         const hargaOnDetected = (data) => {
             const code = data.codeResult.code;
-            if (navigator.vibrate) navigator.vibrate(80);
-            hargaStopScan();
-            hargaCheckCode(code);
+            if (!code) return;
+
+            // Quagga sering "salah baca" satu-dua frame (noise kamera).
+            // decodedCodes.error = tingkat keraguan tiap digit; makin kecil makin yakin.
+            const errors = (data.codeResult.decodedCodes || [])
+                .map(x => x.error)
+                .filter(e => e !== undefined);
+            const avgError = errors.length ? errors.reduce((a, b) => a + b, 0) / errors.length : 1;
+            if (avgError > MAX_ERROR) return;
+
+            // Kalau kode beda dari yang sebelumnya, reset hitungan dari 0 lagi
+            if (detectionBuffer.length && detectionBuffer[detectionBuffer.length - 1] !== code) {
+                detectionBuffer = [];
+            }
+            detectionBuffer.push(code);
+
+            if (detectionBuffer.length >= REQUIRED_MATCHES) {
+                detectionBuffer = [];
+                if (navigator.vibrate) navigator.vibrate(80);
+                hargaStopScan();
+                hargaCheckCode(code);
+            }
         };
 
         window.hargaStartScan = () => {
             if (typeof Quagga === 'undefined') { alert('Library scanner gagal dimuat. Cek koneksi internet.'); return; }
+            detectionBuffer = [];
             document.getElementById('h-scanner-wrap').style.display = 'block';
             document.getElementById('h-scan-btn').style.display = 'none';
             document.getElementById('h-result').style.display = 'none';
