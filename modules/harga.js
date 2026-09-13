@@ -46,8 +46,8 @@ Zuna.register({
         const STORAGE_KEY = 'zuna_harga_v1';
         let scanning = false;
         let detectionBuffer = [];
-        const REQUIRED_MATCHES = 4; // harus kebaca sama persis 4x berturut-turut baru dianggap valid
-        const MAX_ERROR = 0.15; // buang hasil baca yang kualitasnya jelek/meragukan
+        const REQUIRED_MATCHES = 2; // harus kebaca sama persis 2x berturut-turut baru dianggap valid
+        const MAX_ERROR = 0.3; // buang hasil baca yang kualitasnya jelek/meragukan
 
         const getDB = () => {
             const raw = localStorage.getItem(STORAGE_KEY);
