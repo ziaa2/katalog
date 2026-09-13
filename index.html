@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ZUNA - Alat Bantu Harian</title>
+    
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        @keyframes reveal {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-reveal { animation: reveal 0.5s ease-out forwards; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">ZUNA</div>
+        <div class=>alat bantu harian</div>
+        <div class="h-right">
+            <button onclick="Zuna.open('v-donasi')" class="btn-top">Donasi</button>
+        </div>
+    </header>
+
+    <!-- SEARCH & TABS -->
+    <div class="search-container">
+        <div class="search-wrapper">
+            <i class="ph ph-magnifying-glass" style="color: var(--sub);"></i>
+            <input type="text" id="search-input" placeholder="Cari alat bantu..." oninput="Zuna.search(this.value)">
+        </div>
+    </div>
+
+    <div class="tabs-container">
+        <button class="tab-btn active" onclick="Zuna.filterCategory('all', this)">SEMUA</button>
+        <button class="tab-btn" onclick="Zuna.filterCategory('keuangan', this)">KEUANGAN</button>
+        <button class="tab-btn" onclick="Zuna.filterCategory('produktivitas', this)">TOOLS</button>
+        <button class="tab-btn" onclick="Zuna.filterCategory('kreatif', this)">KREATIF</button>
+    </div>
+
+    <div id="main-dashboard" class="grid"></div>
+
+    <div id="tool-container">
+        <!-- Halaman Donasi (Link Saweria Tetap) -->
+        <div id="v-donasi" class="view">
+            <span class="back-btn" onclick="history.back()">✕ KEMBALI1</span>
+            <div class="tool-ui" style="text-align: center; animation: reveal 0.5s ease-out;">
+                <i class="ph ph-heart" style="font-size: 50px; color: #faae2b; margin-bottom: 20px; display: block;"></i>
+                <h2 style="margin-bottom: 15px; font-weight: 800; color: #fff;">Dukung ZUNA</h2>
+                <p style="color: var(--sub); line-height: 1.6; margin-bottom: 30px; font-size: 13px; text-align: left;">
+                    Halo! Terima kasih sudah menggunakan aplikasi Zuna. <br><br>
+                    Project ini dikembangkan gratis dan tanpa iklan. Dukungan darimu sangat berarti untuk terus update fitur baru.
+                </p>
+                <button class="btn-calc" onclick="window.open('https://saweria.co/maszaxx', '_blank')" style="background: #faae2b; color: #000; font-weight: 800;">
+                    LANJUT KE SAWERIA
+                </button>
+                <p style="font-size: 9px; color: #333; margin-top: 20px; letter-spacing: 1px;">SUPPORT VIA QRIS, DANA, OVO, GOPAY, DLL</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>VERSI 2026.08 • PRIVASI TERJAMIN • BY ZUNA</p>
+    </footer>
+
+    <script src="core.js"></script>
+    <!-- Semua script asal tidak ada yang hilang -->
+    <script src="modules/kasir.js"></script>
+    <script src="modules/stok.js"></script>
+    <script src="modules/kulakan.js"></script>
+    <script src="modules/jajan.js"></script>
+    <script src="modules/struk.js"></script>
+    <script src="modules/harga.js"></script>
+</body>
+</html>
