@@ -7,15 +7,14 @@
 */
 
 const TOOL_REGISTRY = [
-  // Contoh:
-  // {
-  //   id: "calculator",
-  //   name: "Calculator",
-  //   description: "Hitung cepat",
-  //   icon: "🧮",
-  //   color: "",
-  //   file: "./tools/calculator.js"
-  // }
+  {
+    id: "kasir-laba",
+    name: "Kasir & Laba",
+    description: "Catat pemasukan harian",
+    icon: "💰",
+    color: "orange",
+    file: "./tools/kasir-laba.js"
+  }
 ];
 
 const state = {
