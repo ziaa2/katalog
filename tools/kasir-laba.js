@@ -2,45 +2,51 @@
   MASZ TOOLS
   KASIR & LABA
 
-  Fitur:
-  - Nominal cepat 1K / 2K / 5K / 10K
-  - Nominal manual
-  - Input laba
-  - Total pemasukan hari ini
-  - Total laba hari ini
-  - Riwayat transaksi
-  - Hapus transaksi
-  - Data tersimpan di localStorage
-  - Otomatis reset ketika tanggal berganti
-  - Animasi smooth
+  Konsep:
+  - Tombol 2K
+  - Tombol 3K
+  - Tombol 5K
+  - Tombol 10K
+  - Setiap pencet langsung menambah
+  - Bisa pencet tombol yang sama berkali-kali
+  - Total laba otomatis dihitung
+  - Reset otomatis setiap hari
+  - Data tersimpan lokal
 */
 
 const STORAGE_KEY = "masz_kasir_laba";
 
-const money = (number) => {
+
+/* =========================
+   FORMAT UANG
+========================= */
+
+function money(number) {
+
   return new Intl.NumberFormat("id-ID", {
     style: "currency",
     currency: "IDR",
     maximumFractionDigits: 0
-  }).format(Number(number) || 0);
-};
+  }).format(number || 0);
 
-const getToday = () => {
-  const date = new Date();
+}
 
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
 
-  return `${year}-${month}-${day}`;
-};
+/* =========================
+   TANGGAL
+========================= */
 
-const getTime = () => {
-  return new Date().toLocaleTimeString("id-ID", {
-    hour: "2-digit",
-    minute: "2-digit"
-  });
-};
+function today() {
+
+  const d = new Date();
+
+  return [
+    d.getFullYear(),
+    String(d.getMonth() + 1).padStart(2, "0"),
+    String(d.getDate()).padStart(2, "0")
+  ].join("-");
+
+}
 
 
 /* =========================
@@ -48,45 +54,61 @@ const getTime = () => {
 ========================= */
 
 function loadData() {
-  const today = getToday();
 
-  let data;
+  const currentDate = today();
+
+  let data = null;
 
   try {
+
     data = JSON.parse(
-      localStorage.getItem(STORAGE_KEY) || "null"
+      localStorage.getItem(STORAGE_KEY)
     );
+
   } catch (error) {
+
     data = null;
+
   }
+
 
   /*
-    Kalau tanggal berbeda,
-    semua transaksi dianggap sudah selesai
-    dan mulai data baru.
+    Kalau sudah ganti hari,
+    otomatis mulai dari Rp0.
   */
 
-  if (!data || data.date !== today) {
+  if (
+    !data ||
+    data.date !== currentDate
+  ) {
+
     data = {
-      date: today,
+
+      date: currentDate,
+
+      total: 0,
+
       transactions: []
+
     };
 
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(data)
-    );
+    saveData(data);
+
   }
 
+
   return data;
+
 }
 
 
 function saveData(data) {
+
   localStorage.setItem(
     STORAGE_KEY,
     JSON.stringify(data)
   );
+
 }
 
 
@@ -94,273 +116,248 @@ function saveData(data) {
    STYLE
 ========================= */
 
-function injectStyles() {
+function injectStyle() {
 
-  if (document.getElementById("masz-kasir-style")) {
+  if (
+    document.getElementById(
+      "masz-kasir-style"
+    )
+  ) {
+
     return;
+
   }
 
-  const style = document.createElement("style");
 
-  style.id = "masz-kasir-style";
+  const style =
+    document.createElement("style");
+
+  style.id =
+    "masz-kasir-style";
+
 
   style.textContent = `
 
-    .kasir-app {
-      padding: 4px 2px 30px;
-      animation: kasirFadeIn .3s ease;
+    .kasir {
+
+      padding: 5px 2px 30px;
+
+      animation:
+        kasirIn .3s ease;
+
     }
 
-    @keyframes kasirFadeIn {
+
+    @keyframes kasirIn {
+
       from {
+
         opacity: 0;
-        transform: translateY(12px);
+
+        transform:
+          translateY(10px);
+
       }
 
       to {
+
         opacity: 1;
-        transform: translateY(0);
+
+        transform:
+          translateY(0);
+
       }
+
     }
 
 
-    /* =========================
-       SUMMARY
-    ========================= */
+    /* TOTAL */
 
-    .kasir-summary {
+    .kasir-total {
+
+      padding: 25px 20px;
+
+      margin-bottom: 18px;
+
+      text-align: center;
+
+      border-radius: 22px;
+
+      background:
+        linear-gradient(
+          145deg,
+          #211e1b,
+          #17191b
+        );
+
+      border:
+        1px solid
+        rgba(214,162,111,.15);
+
+    }
+
+
+    .kasir-total-label {
+
+      color: #858c94;
+
+      font-size: 13px;
+
+      margin-bottom: 7px;
+
+    }
+
+
+    .kasir-total-value {
+
+      font-size: 34px;
+
+      font-weight: 850;
+
+      letter-spacing: -1px;
+
+      color: #d6a26f;
+
+      transition:
+        transform .2s ease;
+
+    }
+
+
+    /* BUTTONS */
+
+    .kasir-buttons {
+
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 20px;
+
+      grid-template-columns:
+        1fr 1fr;
+
+      gap: 11px;
+
     }
 
-    .kasir-stat {
-      padding: 17px;
+
+    .kasir-button {
+
+      height: 75px;
+
       border-radius: 19px;
+
+      border:
+        1px solid
+        rgba(255,255,255,.07);
 
       background:
         linear-gradient(
           145deg,
           #1d2226,
-          #15191d
+          #171b1f
         );
 
-      border: 1px solid rgba(255,255,255,.07);
+      color: #f1f2f3;
 
-      transition:
-        transform .2s ease,
-        border-color .2s ease;
-    }
+      font-size: 22px;
 
-    .kasir-stat:hover {
-      transform: translateY(-2px);
-      border-color: rgba(214,162,111,.25);
-    }
-
-    .kasir-stat small {
-      display: block;
-      color: #858c94;
-      font-size: 12px;
-      margin-bottom: 8px;
-    }
-
-    .kasir-stat strong {
-      display: block;
-      font-size: 18px;
-      letter-spacing: -.4px;
-    }
-
-    .kasir-profit strong {
-      color: #d6a26f;
-    }
-
-
-    /* =========================
-       LABEL
-    ========================= */
-
-    .kasir-label {
-      display: block;
-      color: #a5abb1;
-      font-size: 13px;
-      margin: 0 0 9px 2px;
-    }
-
-
-    /* =========================
-       QUICK NOMINAL
-    ========================= */
-
-    .kasir-presets {
-      display: grid;
-      grid-template-columns:
-        repeat(4, 1fr);
-
-      gap: 9px;
-
-      margin-bottom: 12px;
-    }
-
-    .kasir-preset {
-      min-height: 49px;
-
-      border-radius: 14px;
-
-      background: #1b2025;
-
-      border: 1px solid
-        rgba(255,255,255,.07);
-
-      color: #f0f1f2;
-
-      font-weight: 750;
+      font-weight: 800;
 
       cursor: pointer;
 
       transition:
-        transform .15s ease,
-        background .15s ease,
-        border-color .15s ease;
+        transform .14s ease,
+        background .14s ease,
+        border-color .14s ease;
+
     }
 
-    .kasir-preset:hover {
+
+    .kasir-button:hover {
+
       background: #24292d;
 
       border-color:
         rgba(214,162,111,.35);
-    }
 
-    .kasir-preset:active {
-      transform: scale(.93);
     }
 
 
-    /* =========================
-       INPUT
-    ========================= */
+    .kasir-button:active {
 
-    .kasir-input {
+      transform:
+        scale(.91);
+
+    }
+
+
+    /* RESET */
+
+    .kasir-reset {
+
       width: 100%;
 
-      height: 53px;
+      height: 47px;
 
-      padding: 0 15px;
+      margin-top: 14px;
 
       border-radius: 15px;
 
-      border: 1px solid
-        rgba(255,255,255,.08);
+      background: #1b2024;
 
-      outline: none;
+      border:
+        1px solid
+        rgba(255,255,255,.06);
 
-      background: #181d21;
-
-      color: #fff;
-
-      font-size: 16px;
-
-      margin-bottom: 14px;
-
-      transition:
-        border-color .2s ease,
-        box-shadow .2s ease,
-        transform .2s ease;
-    }
-
-    .kasir-input::placeholder {
-      color: #666d75;
-    }
-
-    .kasir-input:focus {
-
-      border-color:
-        rgba(214,162,111,.55);
-
-      box-shadow:
-        0 0 0 3px
-        rgba(214,162,111,.08);
-
-      transform: translateY(-1px);
-    }
-
-
-    /* =========================
-       BUTTON TAMBAH
-    ========================= */
-
-    .kasir-add {
-
-      width: 100%;
-
-      height: 55px;
-
-      border-radius: 16px;
-
-      background:
-        linear-gradient(
-          135deg,
-          #d6a26f,
-          #b9824d
-        );
-
-      color: #151515;
-
-      font-weight: 850;
+      color: #858c94;
 
       cursor: pointer;
 
       transition:
-        transform .16s ease,
-        filter .16s ease,
-        box-shadow .16s ease;
-    }
+        .15s ease;
 
-    .kasir-add:hover {
-
-      filter: brightness(1.07);
-
-      box-shadow:
-        0 8px 25px
-        rgba(185,130,77,.15);
-    }
-
-    .kasir-add:active {
-      transform: scale(.97);
     }
 
 
-    /* =========================
-       SECTION
-    ========================= */
+    .kasir-reset:hover {
 
-    .kasir-section-head {
+      color: #ff858f;
+
+      background: #292023;
+
+    }
+
+
+    /* HISTORY */
+
+    .kasir-head {
 
       display: flex;
 
-      align-items: center;
+      justify-content:
+        space-between;
 
-      justify-content: space-between;
+      align-items: center;
 
       margin:
         27px 0 11px;
+
     }
 
-    .kasir-section-head strong {
+
+    .kasir-head strong {
+
       font-size: 17px;
+
     }
 
-    .kasir-section-head span {
+
+    .kasir-head span {
 
       color: #777f87;
 
       font-size: 12px;
+
     }
 
-
-    /* =========================
-       TRANSACTIONS
-    ========================= */
 
     .kasir-list {
 
@@ -369,7 +366,9 @@ function injectStyles() {
       flex-direction: column;
 
       gap: 8px;
+
     }
+
 
     .kasir-row {
 
@@ -377,55 +376,54 @@ function injectStyles() {
 
       align-items: center;
 
-      gap: 11px;
+      gap: 12px;
 
-      padding: 12px;
+      padding: 13px;
 
       border-radius: 15px;
 
       background: #171c20;
 
-      border: 1px solid
-        rgba(255,255,255,.055);
+      border:
+        1px solid
+        rgba(255,255,255,.05);
 
       animation:
-        kasirRowIn .22s ease both;
+        rowIn .2s ease;
 
-      transition:
-        transform .15s ease,
-        background .15s ease;
     }
 
-    .kasir-row:hover {
-      transform: translateX(2px);
-      background: #1a2024;
-    }
 
-    @keyframes kasirRowIn {
+    @keyframes rowIn {
 
       from {
+
         opacity: 0;
+
         transform:
-          translateY(8px)
-          scale(.98);
+          translateY(7px)
+          scale(.97);
+
       }
 
       to {
+
         opacity: 1;
+
         transform:
           translateY(0)
           scale(1);
+
       }
 
     }
 
 
-    .kasir-icon {
+    .kasir-row-icon {
 
       width: 40px;
-      height: 40px;
 
-      flex: none;
+      height: 40px;
 
       border-radius: 12px;
 
@@ -437,9 +435,10 @@ function injectStyles() {
 
       color: #e6ae79;
 
-      font-size: 14px;
+      font-size: 13px;
 
       font-weight: 800;
+
     }
 
 
@@ -447,15 +446,17 @@ function injectStyles() {
 
       flex: 1;
 
-      min-width: 0;
     }
+
 
     .kasir-row-main b {
 
       display: block;
 
       font-size: 15px;
+
     }
+
 
     .kasir-row-main small {
 
@@ -466,75 +467,13 @@ function injectStyles() {
       font-size: 12px;
 
       margin-top: 2px;
+
     }
 
-
-    .kasir-row-money {
-
-      text-align: right;
-    }
-
-    .kasir-row-money b {
-
-      display: block;
-
-      font-size: 14px;
-    }
-
-    .kasir-row-money small {
-
-      display: block;
-
-      color: #63cda9;
-
-      font-size: 11px;
-
-      margin-top: 2px;
-    }
-
-
-    /* =========================
-       DELETE
-    ========================= */
-
-    .kasir-delete {
-
-      width: 30px;
-      height: 30px;
-
-      border-radius: 10px;
-
-      background: #252a2e;
-
-      color: #858c94;
-
-      cursor: pointer;
-
-      transition:
-        background .15s ease,
-        color .15s ease,
-        transform .15s ease;
-    }
-
-    .kasir-delete:hover {
-
-      background: #3a2529;
-
-      color: #ff8792;
-    }
-
-    .kasir-delete:active {
-      transform: scale(.88);
-    }
-
-
-    /* =========================
-       EMPTY
-    ========================= */
 
     .kasir-empty {
 
-      padding: 28px 15px;
+      padding: 28px;
 
       text-align: center;
 
@@ -548,30 +487,11 @@ function injectStyles() {
       font-size: 13px;
 
       line-height: 1.6;
+
     }
 
 
-    /* =========================
-       NOTE
-    ========================= */
-
-    .kasir-note {
-
-      margin-top: 13px;
-
-      color: #686f77;
-
-      font-size: 11px;
-
-      line-height: 1.5;
-
-      text-align: center;
-    }
-
-
-    /* =========================
-       TOAST
-    ========================= */
+    /* TOAST */
 
     .kasir-toast {
 
@@ -579,39 +499,33 @@ function injectStyles() {
 
       left: 50%;
 
-      bottom: 92px;
-
-      transform:
-        translate(-50%, 15px);
-
-      opacity: 0;
+      bottom: 90px;
 
       z-index: 9999;
 
       padding:
-        11px 16px;
+        10px 15px;
 
       border-radius: 13px;
 
       background: #252b30;
 
-      border: 1px solid
-        rgba(255,255,255,.08);
-
       color: #eee;
 
       font-size: 13px;
 
+      opacity: 0;
+
+      transform:
+        translate(-50%, 12px);
+
       pointer-events: none;
 
       transition:
-        opacity .2s ease,
-        transform .2s ease;
+        .2s ease;
 
-      box-shadow:
-        0 10px 30px
-        rgba(0,0,0,.25);
     }
+
 
     .kasir-toast.show {
 
@@ -619,21 +533,27 @@ function injectStyles() {
 
       transform:
         translate(-50%, 0);
+
     }
 
 
     @media(max-width:380px) {
 
-      .kasir-presets {
-        grid-template-columns:
-          repeat(2, 1fr);
+      .kasir-button {
+
+        height: 68px;
+
+        font-size: 20px;
+
       }
 
     }
 
   `;
 
+
   document.head.appendChild(style);
+
 }
 
 
@@ -641,181 +561,156 @@ function injectStyles() {
    TOAST
 ========================= */
 
-function showToast(message) {
+function toast(text) {
 
-  let toast =
-    document.querySelector(".kasir-toast");
+  let element =
+    document.querySelector(
+      ".kasir-toast"
+    );
 
-  if (!toast) {
 
-    toast =
+  if (!element) {
+
+    element =
       document.createElement("div");
 
-    toast.className =
+    element.className =
       "kasir-toast";
 
-    document.body.appendChild(toast);
+    document.body.appendChild(
+      element
+    );
+
   }
 
-  toast.textContent = message;
 
-  toast.classList.add("show");
+  element.textContent = text;
 
-  clearTimeout(
-    toast._timer
+  element.classList.add(
+    "show"
   );
 
-  toast._timer =
+
+  clearTimeout(
+    element._timer
+  );
+
+
+  element._timer =
     setTimeout(() => {
 
-      toast.classList.remove(
+      element.classList.remove(
         "show"
       );
 
-    }, 1800);
+    }, 1200);
+
 }
 
 
 /* =========================
-   MAIN TOOL
+   TOOL
 ========================= */
 
 export function mount(container) {
 
-  injectStyles();
+  injectStyle();
+
 
   container.innerHTML = `
 
-    <div class="kasir-app">
+    <div class="kasir">
 
-      <!-- SUMMARY -->
 
-      <div class="kasir-summary">
+      <!-- TOTAL -->
 
-        <div class="kasir-stat">
+      <div class="kasir-total">
 
-          <small>
-            Pemasukan hari ini
-          </small>
+        <div class="kasir-total-label">
 
-          <strong id="kasirIncome">
-            Rp0
-          </strong>
+          LABA HARI INI
 
         </div>
 
 
-        <div class="
-          kasir-stat
-          kasir-profit
-        ">
+        <div
+          id="kasirTotal"
+          class="kasir-total-value"
+        >
 
-          <small>
-            Laba hari ini
-          </small>
-
-          <strong id="kasirProfit">
-            Rp0
-          </strong>
+          Rp0
 
         </div>
 
       </div>
 
 
-      <!-- NOMINAL -->
+      <!-- BUTTON -->
 
-      <label class="kasir-label">
-        Nominal pemasukan
-      </label>
+      <div class="kasir-buttons">
 
-
-      <div class="kasir-presets">
 
         <button
-          class="kasir-preset"
+          class="kasir-button"
           data-value="2000"
         >
-          1K
+
+          2K
+
         </button>
 
+
         <button
-          class="kasir-preset"
+          class="kasir-button"
           data-value="3000"
         >
-          2K
+
+          3K
+
         </button>
 
+
         <button
-          class="kasir-preset"
+          class="kasir-button"
           data-value="5000"
         >
+
           5K
+
         </button>
 
+
         <button
-          class="kasir-preset"
+          class="kasir-button"
           data-value="10000"
         >
+
           10K
+
         </button>
+
 
       </div>
 
 
-      <input
-        id="kasirNominal"
-        class="kasir-input"
-        type="number"
-        inputmode="numeric"
-        min="0"
-        step="100"
-        placeholder="Atau masukkan nominal manual"
-      />
-
-
-      <!-- LABA -->
-
-      <label class="kasir-label">
-
-        Laba transaksi
-
-        <span style="
-          color:#666;
-        ">
-          (opsional)
-        </span>
-
-      </label>
-
-
-      <input
-        id="kasirProfitInput"
-        class="kasir-input"
-        type="number"
-        inputmode="numeric"
-        min="0"
-        step="100"
-        placeholder="Contoh: 3.000"
-      />
-
-
-      <!-- ADD -->
+      <!-- RESET -->
 
       <button
-        id="kasirAdd"
-        class="kasir-add"
+        id="kasirReset"
+        class="kasir-reset"
       >
-        ＋ Catat Pemasukan
+
+        Reset Hari Ini
+
       </button>
 
 
-      <!-- LIST -->
+      <!-- HISTORY -->
 
-      <div class="kasir-section-head">
+      <div class="kasir-head">
 
         <strong>
-          Transaksi hari ini
+          Riwayat
         </strong>
 
         <span id="kasirCount">
@@ -831,57 +726,31 @@ export function mount(container) {
       ></div>
 
 
-      <div class="kasir-note">
-
-        Data tersimpan lokal di perangkat.
-        <br>
-
-        Saat tanggal berganti pukul 00.00,
-        transaksi otomatis mulai dari nol.
-
-      </div>
-
     </div>
 
   `;
 
 
-  /* =========================
-     ELEMENT
-  ========================= */
-
-  const nominal =
+  const total =
     container.querySelector(
-      "#kasirNominal"
+      "#kasirTotal"
     );
 
-  const profit =
-    container.querySelector(
-      "#kasirProfitInput"
-    );
 
-  const incomeEl =
-    container.querySelector(
-      "#kasirIncome"
-    );
-
-  const profitEl =
-    container.querySelector(
-      "#kasirProfit"
-    );
-
-  const countEl =
-    container.querySelector(
-      "#kasirCount"
-    );
-
-  const listEl =
+  const list =
     container.querySelector(
       "#kasirList"
     );
 
 
-  let data = loadData();
+  const count =
+    container.querySelector(
+      "#kasirCount"
+    );
+
+
+  let data =
+    loadData();
 
 
   /* =========================
@@ -890,71 +759,43 @@ export function mount(container) {
 
   function render() {
 
-    data = loadData();
+    data =
+      loadData();
 
 
-    const income =
-      data.transactions.reduce(
-        (total, transaction) => {
-
-          return total +
-            transaction.nominal;
-
-        },
-        0
-      );
+    total.textContent =
+      money(data.total);
 
 
-    const laba =
-      data.transactions.reduce(
-        (total, transaction) => {
-
-          return total +
-            transaction.laba;
-
-        },
-        0
-      );
-
-
-    incomeEl.textContent =
-      money(income);
-
-    profitEl.textContent =
-      money(laba);
-
-    countEl.textContent =
+    count.textContent =
       `${data.transactions.length} transaksi`;
 
-
-    /* EMPTY */
 
     if (
       data.transactions.length === 0
     ) {
 
-      listEl.innerHTML = `
+      list.innerHTML = `
 
         <div class="kasir-empty">
 
-          Belum ada transaksi hari ini.
+          Belum ada transaksi.
 
           <br>
 
-          Pilih nominal di atas
-          untuk mulai mencatat.
+          Tekan nominal untuk
+          mulai menghitung laba.
 
         </div>
 
       `;
 
       return;
+
     }
 
 
-    /* TRANSACTIONS */
-
-    listEl.innerHTML =
+    list.innerHTML =
       data.transactions
         .slice()
         .reverse()
@@ -962,290 +803,125 @@ export function mount(container) {
 
           <div
             class="kasir-row"
-            data-id="${transaction.id}"
           >
 
-            <div class="kasir-icon">
-              Rp
-            </div>
-
-
-            <div class="kasir-row-main">
-
-              <b>
-                ${money(
-                  transaction.nominal
-                )}
-              </b>
-
-              <small>
-                ${transaction.time}
-              </small>
-
-            </div>
-
-
-            <div class="kasir-row-money">
-
-              <b>
-                ${money(
-                  transaction.nominal
-                )}
-              </b>
-
-              <small>
-                +${money(
-                  transaction.laba
-                )}
-                laba
-              </small>
-
-            </div>
-
-
-            <button
-              class="kasir-delete"
-              data-delete="${transaction.id}"
-              title="Hapus transaksi"
+            <div
+              class="kasir-row-icon"
             >
-              ×
-            </button>
+
+              +Rp
+
+            </div>
+
+
+            <div
+              class="kasir-row-main"
+            >
+
+              <b>
+
+                ${money(
+                  transaction.value
+                )}
+
+              </b>
+
+
+              <small>
+
+                ${transaction.time}
+
+              </small>
+
+            </div>
 
           </div>
 
         `)
         .join("");
 
-
-    /* DELETE */
-
-    listEl
-      .querySelectorAll(
-        "[data-delete]"
-      )
-      .forEach(button => {
-
-        button.addEventListener(
-          "click",
-          () => {
-
-            const id =
-              button.dataset.delete;
-
-
-            const row =
-              button.closest(
-                ".kasir-row"
-              );
-
-
-            row.animate(
-              [
-                {
-                  opacity: 1,
-                  transform:
-                    "translateX(0)"
-                },
-
-                {
-                  opacity: 0,
-                  transform:
-                    "translateX(25px)"
-                }
-              ],
-              {
-                duration: 180,
-                easing: "ease"
-              }
-            );
-
-
-            setTimeout(() => {
-
-              data.transactions =
-                data.transactions.filter(
-                  transaction =>
-                    transaction.id !== id
-                );
-
-              saveData(data);
-
-              render();
-
-              showToast(
-                "Transaksi dihapus"
-              );
-
-            }, 160);
-
-          }
-        );
-
-      });
-
   }
 
 
   /* =========================
-     ADD TRANSACTION
-  ========================= */
+     ADD
+========================= */
 
-  function addTransaction() {
+  function add(value) {
 
-    data = loadData();
-
-
-    const nominalValue =
-      Math.floor(
-        Number(
-          nominal.value
-        ) || 0
-      );
+    data =
+      loadData();
 
 
-    const profitValue =
-      Math.floor(
-        Number(
-          profit.value
-        ) || 0
-      );
+    data.total += value;
 
 
-    /* INVALID */
+    data.transactions.push({
 
-    if (
-      nominalValue <= 0
-    ) {
-
-      nominal.focus();
-
-
-      nominal.animate(
-        [
-          {
-            transform:
-              "translateX(-5px)"
-          },
-
-          {
-            transform:
-              "translateX(5px)"
-          },
-
-          {
-            transform:
-              "translateX(-3px)"
-          },
-
-          {
-            transform:
-              "translateX(0)"
-          }
-        ],
-        {
-          duration: 180
-        }
-      );
-
-
-      showToast(
-        "Masukkan nominal dulu"
-      );
-
-      return;
-    }
-
-
-    /* CREATE */
-
-    const transaction = {
-
-      id:
-        `${Date.now()}-${Math.random()
-          .toString(36)
-          .slice(2)}`,
-
-      nominal:
-        nominalValue,
-
-      laba:
-        Math.max(
-          0,
-          profitValue
-        ),
+      value: value,
 
       time:
-        getTime()
+        new Date()
+          .toLocaleTimeString(
+            "id-ID",
+            {
+              hour: "2-digit",
+              minute: "2-digit"
+            }
+          )
 
-    };
-
-
-    data.transactions.push(
-      transaction
-    );
+    });
 
 
     saveData(data);
 
 
-    /* RESET INPUT */
-
-    nominal.value = "";
-    profit.value = "";
-
-
-    /* ANIMATION */
-
     render();
 
 
-    const last =
-      listEl.querySelector(
-        ".kasir-row"
-      );
+    /* TOTAL ANIMATION */
 
+    total.animate(
 
-    if (last) {
-
-      last.animate(
-        [
-          {
-            transform:
-              "scale(.94)",
-            opacity: .4
-          },
-
-          {
-            transform:
-              "scale(1.02)",
-            opacity: 1
-          },
-
-          {
-            transform:
-              "scale(1)",
-            opacity: 1
-          }
-        ],
+      [
         {
-          duration: 280,
-          easing: "ease-out"
+          transform:
+            "scale(1)"
+        },
+
+        {
+          transform:
+            "scale(1.12)"
+        },
+
+        {
+          transform:
+            "scale(1)"
         }
-      );
 
-    }
+      ],
+
+      {
+
+        duration: 220,
+
+        easing: "ease-out"
+
+      }
+
+    );
 
 
-    showToast(
-      "Pemasukan berhasil dicatat ✓"
+    toast(
+      `+${money(value)}`
     );
 
   }
 
 
   /* =========================
-     QUICK BUTTON
-  ========================= */
+     BUTTON
+========================= */
 
   container
     .querySelectorAll(
@@ -1257,15 +933,19 @@ export function mount(container) {
         "click",
         () => {
 
-          nominal.value =
-            button.dataset.value;
+          const value =
+            Number(
+              button.dataset.value
+            );
 
 
-          nominal.focus();
+          add(value);
 
 
           button.animate(
+
             [
+
               {
                 transform:
                   "scale(1)"
@@ -1273,7 +953,7 @@ export function mount(container) {
 
               {
                 transform:
-                  "scale(.9)"
+                  "scale(.88)"
               },
 
               {
@@ -1285,11 +965,17 @@ export function mount(container) {
                 transform:
                   "scale(1)"
               }
+
             ],
+
             {
-              duration: 200,
+
+              duration: 220,
+
               easing: "ease-out"
+
             }
+
           );
 
         }
@@ -1299,67 +985,57 @@ export function mount(container) {
 
 
   /* =========================
-     ADD BUTTON
-  ========================= */
+     RESET
+========================= */
 
   container
     .querySelector(
-      "#kasirAdd"
+      "#kasirReset"
     )
     .addEventListener(
       "click",
-      addTransaction
+      () => {
+
+        data = {
+
+          date: today(),
+
+          total: 0,
+
+          transactions: []
+
+        };
+
+
+        saveData(data);
+
+        render();
+
+        toast(
+          "Kasir direset"
+        );
+
+      }
     );
 
 
   /* =========================
-     ENTER KEY
-  ========================= */
-
-  [nominal, profit]
-    .forEach(input => {
-
-      input.addEventListener(
-        "keydown",
-        event => {
-
-          if (
-            event.key === "Enter"
-          ) {
-
-            addTransaction();
-
-          }
-
-        }
-      );
-
-    });
-
-
-  /* =========================
-     FIRST RENDER
-  ========================= */
+     INITIAL
+========================= */
 
   render();
 
 
   /* =========================
-     CHECK NEW DAY
-  ========================= */
+     AUTO RESET NEW DAY
+========================= */
 
-  const dayChecker =
+  const checker =
     setInterval(() => {
 
       const current =
         loadData();
 
-
-      /*
-        Kalau tanggal berubah,
-        loadData() otomatis membuat
-        database baru.
-      */
 
       if (
         current.date !== data.date
@@ -1369,8 +1045,8 @@ export function mount(container) {
 
         render();
 
-        showToast(
-          "Hari baru. Kasir direset ✓"
+        toast(
+          "Hari baru dimulai"
         );
 
       }
@@ -1380,7 +1056,7 @@ export function mount(container) {
 
   /* =========================
      CLEANUP
-  ========================= */
+========================= */
 
   const observer =
     new MutationObserver(() => {
@@ -1392,7 +1068,7 @@ export function mount(container) {
       ) {
 
         clearInterval(
-          dayChecker
+          checker
         );
 
         observer.disconnect();
@@ -1410,4 +1086,4 @@ export function mount(container) {
     }
   );
 
-    } 
+}
