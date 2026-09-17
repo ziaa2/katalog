@@ -734,14 +734,14 @@ export function mount(container) {
 
         <button
           class="kasir-preset"
-          data-value="1000"
+          data-value="2000"
         >
           1K
         </button>
 
         <button
           class="kasir-preset"
-          data-value="2000"
+          data-value="3000"
         >
           2K
         </button>
