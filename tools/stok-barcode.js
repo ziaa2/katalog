@@ -130,11 +130,18 @@ export function mount(el) {
     if(!code) return;
 
     if(db[code]) {
-      db[code].stock++;
-      saveDB(db);
-      render("#list");
-      $("#msg",el).textContent = `${db[code].name} · stok +1`;
-      return;
+  const p = db[code];
+  p.stock++;
+  saveDB(db);
+
+  $("#msg",el).innerHTML = `
+    <b>${p.name}</b><br>
+    Modal: ${money(p.modal)} · Jual: ${money(p.jual)}<br>
+    Stok: ${p.stock}
+  `;
+
+  render("#list");
+  return;
     }
 
     $("#msg",el).textContent = "Mencari nama produk...";
