@@ -15,6 +15,14 @@ const TOOL_REGISTRY = [
     color: "orange",
     file: "./tools/kasir-laba.js"
   }
+  {
+  id: "receh",
+  name: "Receh",
+  description: "Catat pengeluaran jajan",
+  icon: "🍜",
+  color: "orange",
+  file: "./tools/receh.js"
+  }
 ];
 
 const state = {
