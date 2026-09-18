@@ -14,7 +14,7 @@ const TOOL_REGISTRY = [
     icon: "💰",
     color: "orange",
     file: "./tools/kasir-laba.js"
-  }
+  }, 
   {
   id: "receh",
   name: "Receh",
