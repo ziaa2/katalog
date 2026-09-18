@@ -22,6 +22,14 @@ const TOOL_REGISTRY = [
   icon: "🍜",
   color: "orange",
   file: "./tools/receh.js"
+  }, 
+  {
+  id: "stok-barcode",
+  name: "Stok",
+  description: "Scan barcode & kelola stok",
+  icon: "📦",
+  color: "blue",
+  file: "./tools/stok-barcode.js"
   }
 ];
 
