@@ -30,7 +30,15 @@ const TOOL_REGISTRY = [
   icon: "📦",
   color: "blue",
   file: "./tools/stok-barcode.js"
-  }
+  }, 
+  {
+  id: "catatan-belanja",
+  name: "Catatan Belanja",
+  description: "Catat barang yang mau dibeli",
+  icon: "🛒",
+  color: "orange",
+  file: "./tools/catatan-belanja.js"
+ }
 ];
 
 const state = {
