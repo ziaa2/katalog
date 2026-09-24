@@ -2,85 +2,97 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0b0f11">
-  <meta name="description" content="MASZ TOOLS - Personal Workspace">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0b0f14">
+  <meta name="description" content="Dashboard warung pribadi offline">
   <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css">
-  <title>MASZ TOOLS</title>
+  <title>WarungKu</title>
 </head>
 <body>
-  <div id="app">
-    <header class="topbar">
-      <div>
-        <div class="brand"><span>MASZ</span><b>TOOLS</b></div>
-        <div class="subtitle">Personal Workspace</div>
+<div id="app">
+  <header class="topbar">
+    <div><div class="brand">WarungKu</div><div class="sub">Catatan pribadi • offline</div></div>
+    <button class="icon-btn" id="themeBtn" title="Ganti tema">☼</button>
+  </header>
+
+  <main id="main">
+    <section class="page active" data-page="home">
+      <div class="hero-card">
+        <div class="muted">Laba hari ini</div>
+        <div class="big" id="todayProfit">Rp0</div>
+        <div class="profit-row"><span id="todaySales">Penjualan Rp0</span><span id="todayExpense">Pengeluaran Rp0</span></div>
       </div>
-      <button class="icon-btn" id="settingsBtn" aria-label="Pengaturan">⚙</button>
-    </header>
-
-    <main>
-      <div class="search-wrap">
-        <span class="search-icon">⌕</span>
-        <input id="searchInput" type="search" placeholder="Cari tools..." autocomplete="off">
+      <div class="stats-grid">
+        <div class="stat"><span>Transaksi</span><b id="todayTx">0</b></div>
+        <div class="stat"><span>Produk</span><b id="productCount">0</b></div>
+        <div class="stat"><span>Stok menipis</span><b id="lowStock">0</b></div>
+        <div class="stat"><span>Pelanggan</span><b id="customerCount">0</b></div>
       </div>
-
-      <section class="hero">
-        <div class="hero-copy">
-          <div class="greeting" id="greeting">Good evening,</div>
-          <h1>Maszaax</h1>
-          <p>Semua tools yang kamu butuhkan,<br>di satu tempat.</p>
-          <div class="hero-line"></div>
-        </div>
-        <div class="hero-art">
-          <div class="moon"></div>
-          <div class="mountain m1"></div>
-          <div class="mountain m2"></div>
-          <div class="hero-label">SIMPLE TOOLS<br>BETTER DAYS</div>
-        </div>
-      </section>
-
-      <section class="section-head">
-        <h2>Tools</h2>
-        <button id="viewAllBtn">Lihat semua <span>→</span></button>
-      </section>
-
-      <section id="toolGrid" class="tool-grid"></section>
-
-      <section class="recent-section" id="recentSection">
-        <div class="section-head">
-          <h2>Terakhir digunakan</h2>
-          <button id="recentAllBtn">Lihat semua <span>→</span></button>
-        </div>
-        <div id="recentList" class="recent-list"></div>
-      </section>
-    </main>
-
-    <nav class="bottom-nav">
-      <button class="nav-item active" data-page="home">
-        <span class="nav-icon">⌂</span><span>Home</span>
-      </button>
-      <button class="nav-item" data-page="tools">
-        <span class="nav-icon">▦</span><span>Tools</span>
-      </button>
-      <button class="nav-item" data-page="profile">
-        <span class="nav-icon">♙</span><span>Profile</span>
-      </button>
-    </nav>
-  </div>
-
-  <div id="toolModal" class="modal hidden">
-    <div class="modal-backdrop" id="modalBackdrop"></div>
-    <div class="modal-sheet">
-      <div class="modal-head">
-        <button id="closeModal" class="icon-btn">×</button>
-        <div id="modalTitle">Tool</div>
-        <div style="width:40px"></div>
+      <div class="quick-grid">
+        <button class="quick primary" data-action="sale">＋ Penjualan</button>
+        <button class="quick" data-action="profit">＋ Laba</button>
+        <button class="quick" data-action="expense">− Pengeluaran</button>
+        <button class="quick" data-action="scan">▣ Scan</button>
       </div>
-      <div id="toolMount"></div>
-    </div>
-  </div>
+      <div class="section-head"><h2>Ringkasan 7 hari</h2></div>
+      <div class="chart-card"><canvas id="profitChart" height="180"></canvas></div>
+      <div class="section-head"><h2>Stok menipis</h2><button class="text-btn" data-page-link="products">Lihat semua</button></div>
+      <div id="lowStockList" class="list"></div>
+    </section>
 
-  <script src="app.js"></script>
+    <section class="page" data-page="products">
+      <div class="page-title"><div><h1>Produk</h1><p>Harga, stok, kategori & kode scan</p></div><button class="round" data-action="product">＋</button></div>
+      <div class="search"><span>⌕</span><input id="productSearch" placeholder="Cari nama, kategori, barcode..."></div>
+      <div id="categoryChips" class="chips"></div>
+      <div id="productList" class="list"></div>
+    </section>
+
+    <section class="page" data-page="transactions">
+      <div class="page-title"><div><h1>Transaksi</h1><p>Riwayat penjualan & laba</p></div><button class="round" data-action="sale">＋</button></div>
+      <div class="filter-row">
+        <button class="filter active" data-period="today">Hari ini</button>
+        <button class="filter" data-period="week">7 hari</button>
+        <button class="filter" data-period="month">Bulan</button>
+        <button class="filter" data-period="all">Semua</button>
+      </div>
+      <div id="transactionList" class="list"></div>
+    </section>
+
+    <section class="page" data-page="customers">
+      <div class="page-title"><div><h1>Pelanggan</h1><p>Nomor WhatsApp & catatan pelanggan</p></div><button class="round" data-action="customer">＋</button></div>
+      <div class="search"><span>⌕</span><input id="customerSearch" placeholder="Cari pelanggan / nomor..."></div>
+      <div id="customerList" class="list"></div>
+    </section>
+
+    <section class="page" data-page="more">
+      <div class="page-title"><div><h1>Lainnya</h1><p>Hutang, laporan dan backup</p></div></div>
+      <div class="menu-grid">
+        <button class="menu-card" data-action="debt">💳<b>Hutang / Piutang</b><small>Catat dan tandai lunas</small></button>
+        <button class="menu-card" data-action="report">📊<b>Laporan</b><small>Ringkasan keuangan</small></button>
+        <button class="menu-card" data-action="backup">💾<b>Backup</b><small>Export data ke file</small></button>
+        <button class="menu-card" data-action="restore">📥<b>Import</b><small>Pulihkan data backup</small></button>
+        <button class="menu-card" data-action="categories">🏷️<b>Kategori</b><small>Kelola kategori produk</small></button>
+        <button class="menu-card" data-action="reset">⚠️<b>Reset data</b><small>Hapus semua data lokal</small></button>
+      </div>
+      <div class="info-card"><b>100% tanpa API</b><p>Data disimpan di perangkat ini. Tidak dikirim ke server. Backup secara berkala jika data penting.</p></div>
+    </section>
+  </main>
+
+  <button class="fab" id="fab">＋</button>
+  <nav class="bottom-nav">
+    <button class="nav active" data-page-link="home">⌂<span>Home</span></button>
+    <button class="nav" data-page-link="products">▣<span>Produk</span></button>
+    <button class="nav" data-page-link="transactions">◷<span>Transaksi</span></button>
+    <button class="nav" data-page-link="customers">♙<span>Pelanggan</span></button>
+    <button class="nav" data-page-link="more">•••<span>Lainnya</span></button>
+  </nav>
+</div>
+
+<div id="modal" class="modal hidden"><div class="sheet" id="sheet"></div></div>
+<input type="file" id="restoreInput" accept=".json" hidden>
+<div id="toast" class="toast"></div>
+<script src="app.js"></script>
 </body>
 </html>
