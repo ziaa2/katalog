@@ -23,6 +23,7 @@
         <button class="nav-item" data-page="kulakan"><span>🛒</span> Kulakan</button>
         <button class="nav-item" data-page="tools"><span>⚒</span> Tools</button>
         <button class="nav-item" data-page="riwayat"><span>↺</span> Riwayat</button>
+        <button class="nav-item" data-page="laporan"><span>▥</span> Laporan omzet & laba</button>
         <button class="nav-item" data-page="pengaturan"><span>⚙</span> Pengaturan</button>
       </nav>
       <div class="sidebar-note"><span class="mini-logo">◆</span><div><b>Data tersimpan lokal</b><small>di perangkat ini</small></div></div>
@@ -81,6 +82,25 @@
       <section class="page" id="page-riwayat">
         <div class="toolbar"><label class="search-box">⌕ <input id="historySearch" placeholder="Cari aktivitas..." autocomplete="off"></label><button class="secondary-btn" id="exportHistory">Ekspor CSV</button></div>
         <div id="historyList" class="activity-list empty-state">Belum ada riwayat.</div>
+      </section>
+
+      <section class="page" id="page-laporan">
+        <div class="section-heading"><div><h3>Laporan omzet & laba</h3><p class="muted">Ringkasan penjualan berdasarkan transaksi yang dicatat di StockMate.</p></div></div>
+        <div class="filters report-periods" role="group" aria-label="Periode laporan">
+          <button class="filter active" data-report-period="today">Hari ini</button>
+          <button class="filter" data-report-period="week">7 hari terakhir</button>
+          <button class="filter" data-report-period="month">Bulan ini</button>
+        </div>
+        <p class="muted report-range" id="reportRange">Periode hari ini</p>
+        <div class="stats-grid report-stats">
+          <article class="stat-card stat-revenue"><span class="stat-label">Total omzet</span><strong id="reportRevenue">Rp0</strong><small>nilai penjualan yang tercatat</small></article>
+          <article class="stat-card"><span class="stat-label">Modal barang terjual</span><strong id="reportCost">Rp0</strong><small>modal dari barang yang terjual</small></article>
+          <article class="stat-card"><span class="stat-label">Laba kotor</span><strong id="reportProfit">Rp0</strong><small>omzet dikurangi modal barang</small></article>
+          <article class="stat-card"><span class="stat-label">Jumlah barang terjual</span><strong id="reportUnits">0</strong><small id="reportTransactions">0 transaksi</small></article>
+        </div>
+        <div class="section-heading"><div><h3>Penjualan dalam periode</h3><p class="muted">Transaksi yang dibatalkan tidak dihitung.</p></div></div>
+        <div id="reportSalesList" class="activity-list empty-state">Belum ada penjualan pada periode ini.</div>
+        <p class="fine-print">Catatan: transaksi lama yang belum menyimpan harga saat transaksi memakai harga barang saat ini sebagai perkiraan, sehingga omzet dan laba historis bisa berbeda.</p>
       </section>
 
       <section class="page" id="page-pengaturan">

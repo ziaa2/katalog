@@ -14,3 +14,6 @@
 .category-card strong{font-size:clamp(18px,2.8vw,25px);margin:9px 0 7px}
 .category-card small{display:block;line-height:1.6}
 @media(max-width:380px){.category-summary-grid{gap:8px}.category-card{padding:13px}.category-card small{font-size:9px}}
+
+/* Laporan omzet dan laba */
+.report-periods{margin:14px 0 8px}.report-range{margin:0 0 12px}.report-stats{margin-top:12px}.report-stats .stat-card:nth-child(3) strong{color:var(--teal)}.report-stats .stat-card:nth-child(4) strong{color:var(--text)}

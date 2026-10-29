@@ -47,3 +47,11 @@ StockMate membuat cadangan lokal setelah perubahan data penting dan menyimpan be
 
 ## Pencatatan penjualan (update tahap 3)
 Transaksi baru yang dicatat lewat tombol **Terjual** menyimpan snapshot harga jual dan harga modal saat transaksi, total omzet, total modal barang terjual, serta estimasi laba kotor. Data snapshot ini menjadi dasar laporan keuangan dan pembatalan transaksi pada tahap berikutnya. Transaksi lama yang belum memiliki snapshot tidak bisa dihitung dengan akurasi yang sama.
+
+
+## Update Tahap 4 — Laporan omzet dan laba
+- Menambahkan menu Laporan omzet & laba.
+- Periode laporan: hari ini, 7 hari terakhir, dan bulan ini.
+- Menampilkan omzet, modal barang terjual, estimasi laba kotor, jumlah unit, dan daftar penjualan.
+- Penjualan yang ditandai dibatalkan dikecualikan.
+- Transaksi lama tanpa snapshot harga menggunakan harga barang saat ini sebagai perkiraan.
