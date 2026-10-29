@@ -43,3 +43,7 @@ Aplikasi manajemen stok offline untuk warung dan konter. Dibuat dengan HTML, CSS
 
 ## Backup otomatis lokal (update tahap 2)
 StockMate membuat cadangan lokal setelah perubahan data penting dan menyimpan beberapa versi terakhir di perangkat/browser yang sama. Buka Pengaturan untuk melihat waktu cadangan, membuat backup sekarang, atau memulihkan cadangan terakhir. Backup lokal bukan pengganti Ekspor JSON: cadangan lokal tetap dapat hilang jika data situs/browser dihapus atau perangkat rusak. Simpan file Ekspor JSON di tempat lain secara berkala.
+
+
+## Pencatatan penjualan (update tahap 3)
+Transaksi baru yang dicatat lewat tombol **Terjual** menyimpan snapshot harga jual dan harga modal saat transaksi, total omzet, total modal barang terjual, serta estimasi laba kotor. Data snapshot ini menjadi dasar laporan keuangan dan pembatalan transaksi pada tahap berikutnya. Transaksi lama yang belum memiliki snapshot tidak bisa dihitung dengan akurasi yang sama.
