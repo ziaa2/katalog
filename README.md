@@ -39,3 +39,7 @@ Aplikasi manajemen stok offline untuk warung dan konter. Dibuat dengan HTML, CSS
 - Service worker/PWA perlu dijalankan dari HTTPS atau localhost; tidak bisa diuji penuh jika file dibuka langsung dengan `file://`.
 - Ikon menggunakan SVG. Jika perangkat/browser tidak menerima SVG sebagai ikon instalasi, ganti manifest dengan ikon PNG 192×192 dan 512×512.
 - Versi awal ini tidak melakukan transaksi kasir/penjualan otomatis; pengurangan stok dapat ditambahkan pada pengembangan berikutnya.
+
+
+## Backup otomatis lokal (update tahap 2)
+StockMate membuat cadangan lokal setelah perubahan data penting dan menyimpan beberapa versi terakhir di perangkat/browser yang sama. Buka Pengaturan untuk melihat waktu cadangan, membuat backup sekarang, atau memulihkan cadangan terakhir. Backup lokal bukan pengganti Ekspor JSON: cadangan lokal tetap dapat hilang jika data situs/browser dihapus atau perangkat rusak. Simpan file Ekspor JSON di tempat lain secara berkala.

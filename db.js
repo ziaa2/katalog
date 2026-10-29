@@ -2,15 +2,17 @@
 (function(){
   const DB_NAME = "stockmate-local-v1";
   const STORE_NAMES = ["products","history","shopping","expenses","settings"];
+  const BACKUP_STORE = "backups";
   let dbPromise;
   function openDB(){
     if(!("indexedDB" in window)) return Promise.resolve(null);
     if(dbPromise) return dbPromise;
     dbPromise = new Promise(resolve=>{
-      const req=indexedDB.open(DB_NAME,1);
+      const req=indexedDB.open(DB_NAME,2);
       req.onupgradeneeded=()=>{
         const db=req.result;
         STORE_NAMES.forEach(name=>{if(!db.objectStoreNames.contains(name)) db.createObjectStore(name,{keyPath:"id"});});
+        if(!db.objectStoreNames.contains(BACKUP_STORE)) db.createObjectStore(BACKUP_STORE,{keyPath:"id"});
       };
       req.onsuccess=()=>resolve(req.result);
       req.onerror=()=>resolve(null);
@@ -39,5 +41,20 @@
     return new Promise((resolve,reject)=>{const tx=db.transaction(store,"readwrite");tx.objectStore(store).clear();tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});
   }
   async function replace(store,items){await clear(store);for(const item of items) await put(store,item);}
-  window.StockDB={all,put,remove,clear,replace,stores:STORE_NAMES};
+  async function listBackups(){
+    const db=await openDB();
+    if(!db){try{return JSON.parse(localStorage.getItem("stockmate:auto-backups")||"[]").sort((a,b)=>b.createdAt.localeCompare(a.createdAt));}catch{return [];}}
+    return new Promise(resolve=>{const req=db.transaction(BACKUP_STORE,"readonly").objectStore(BACKUP_STORE).getAll();req.onsuccess=()=>resolve((req.result||[]).sort((a,b)=>b.createdAt.localeCompare(a.createdAt)));req.onerror=()=>resolve([]);});
+  }
+  async function createBackup(){
+    const data={};for(const store of STORE_NAMES)data[store]=await all(store);
+    const backup={id:"backup-"+Date.now()+"-"+Math.random().toString(16).slice(2),createdAt:new Date().toISOString(),data};
+    const db=await openDB();
+    if(!db){let list=await listBackups();list.unshift(backup);localStorage.setItem("stockmate:auto-backups",JSON.stringify(list.slice(0,3)));return backup;}
+    await new Promise((resolve,reject)=>{const tx=db.transaction(BACKUP_STORE,"readwrite");tx.objectStore(BACKUP_STORE).put(backup);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});
+    const list=await listBackups();for(const old of list.slice(5)){await new Promise((resolve,reject)=>{const tx=db.transaction(BACKUP_STORE,"readwrite");tx.objectStore(BACKUP_STORE).delete(old.id);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});}
+    return backup;
+  }
+  async function restoreBackup(id){const list=await listBackups(),backup=list.find(b=>b.id===id);if(!backup||!backup.data)throw new Error("Cadangan tidak ditemukan.");for(const store of STORE_NAMES)await replace(store,Array.isArray(backup.data[store])?backup.data[store]:[]);return backup;}
+  window.StockDB={all,put,remove,clear,replace,stores:STORE_NAMES,createBackup,listBackups,restoreBackup};
 })();
