@@ -6,6 +6,7 @@ Aplikasi manajemen stok offline untuk warung dan konter. Dibuat dengan HTML, CSS
 - Dashboard ringkasan jenis barang, stok menipis, total unit, dan nilai modal.
 - Tambah/edit/hapus barang; kategori Warung/Konter; harga modal/jual; barcode; batas minimum.
 - Stok masuk melalui form barang atau pencarian nama.
+- Tombol **Terjual** di setiap barang: masukkan jumlah terjual, stok otomatis berkurang, dan aktivitas masuk ke riwayat.
 - Scan barcode menggunakan `BarcodeDetector` jika didukung browser/perangkat; input kode manual selalu tersedia.
 - Riwayat pergerakan stok.
 - Daftar kulakan terpisah dari inventaris.
