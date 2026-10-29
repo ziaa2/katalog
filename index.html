@@ -36,17 +36,12 @@
       </header>
 
       <section class="page active" id="page-beranda">
-        <div class="welcome-row"><div><p class="muted">Ringkasan usaha hari ini</p><h2>Halo, semangat jaga warung 👋</h2></div><span class="date-chip" id="todayLabel"></span></div>
+        <div class="welcome-row"><div><p class="muted">Ringkasan usaha hari ini</p><h2>Ringkasan warung & konter</h2></div><span class="date-chip" id="todayLabel"></span></div>
         <div class="stats-grid">
+          <article class="stat-card stat-revenue"><span class="stat-label">Total omzet hari ini</span><strong id="statRevenue">Rp0</strong><small>dari penjualan yang dicatat</small></article>
+          <article class="stat-card"><span class="stat-label">Total modal stok</span><strong id="statValue">Rp0</strong><small>nilai modal semua stok tersisa</small></article>
           <article class="stat-card"><span class="stat-label">Total jenis barang</span><strong id="statProducts">0</strong><small>produk terdaftar</small></article>
           <article class="stat-card warning"><span class="stat-label">Stok menipis</span><strong id="statLow">0</strong><small>perlu dicek</small></article>
-          <article class="stat-card"><span class="stat-label">Total unit stok</span><strong id="statUnits">0</strong><small>semua barang</small></article>
-          <article class="stat-card"><span class="stat-label">Nilai modal stok</span><strong id="statValue">Rp0</strong><small>perkiraan persediaan</small></article>
-        </div>
-        <div class="quick-actions">
-          <button class="primary-btn" data-action="add-product">＋ Tambah Barang</button>
-          <button class="secondary-btn" data-action="scanner">▦ Scan Barcode</button>
-          <button class="secondary-btn" data-action="stock-in">↗ Stok Masuk</button>
         </div>
         <div class="section-heading"><div><h3>Perlu diperhatikan</h3><p class="muted">Barang yang stoknya menyentuh batas minimum.</p></div><button class="text-btn" data-goto="barang">Lihat semua →</button></div>
         <div id="lowStockList" class="product-list empty-state">Belum ada barang menipis.</div>
