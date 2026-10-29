@@ -1,36 +1,40 @@
-# WarungKu — Web Pribadi Offline
+# StockMate
 
-Aplikasi pencatatan warung pribadi yang bisa di-host di GitHub Pages dan dipakai dari HP.
+Aplikasi manajemen stok offline untuk warung dan konter. Dibuat dengan HTML, CSS, JavaScript, IndexedDB, dan PWA; cocok di-host lewat GitHub Pages.
 
 ## Fitur
-- Dashboard dark mode
-- Catat penjualan, laba, dan pengeluaran
-- Produk + kategori + harga modal/jual + stok
-- Scan QR/barcode melalui kamera jika browser mendukung BarcodeDetector
-- Input kode manual sebagai fallback
-- Data pelanggan + nomor WhatsApp
-- Hutang/piutang
-- Laporan ringkas
-- Backup & restore JSON
-- PWA / install ke layar utama
-- Offline setelah aset pertama kali terbuka
-- **Tanpa API, tanpa database server**
+- Dashboard ringkasan jenis barang, stok menipis, total unit, dan nilai modal.
+- Tambah/edit/hapus barang; kategori Warung/Konter; harga modal/jual; barcode; batas minimum.
+- Stok masuk melalui form barang atau pencarian nama.
+- Scan barcode menggunakan `BarcodeDetector` jika didukung browser/perangkat; input kode manual selalu tersedia.
+- Riwayat pergerakan stok.
+- Daftar kulakan terpisah dari inventaris.
+- Tools terpisah dari modul stok: kalkulator laba, kalkulator harga jual, catatan pengeluaran, banding harga per unit.
+- Backup/pemulihan JSON, ekspor riwayat CSV.
+- PWA dan cache offline.
+- Dark mode dengan aksen teal, layout mobile-first, sidebar desktop dan menu geser di HP.
 
-## Data
-Data disimpan di `localStorage` browser pada perangkat yang dipakai. Jadi data tidak otomatis berpindah ke HP lain. Gunakan menu **Backup** secara berkala.
+## Cara upload ke GitHub Pages
+1. Buat repository baru, misalnya `stockmate`.
+2. Upload seluruh isi folder ini ke root repository (pastikan `index.html` berada di root).
+3. Buka **Settings → Pages**.
+4. Di **Build and deployment**, pilih **Deploy from a branch**.
+5. Pilih branch `main`, folder `/ (root)`, lalu klik **Save**.
+6. Tunggu deployment selesai dan buka URL GitHub Pages yang ditampilkan.
+7. Di Android, buka URL menggunakan Chrome. Pilih menu `⋮` → **Instal aplikasi** atau **Tambahkan ke layar utama**.
 
-## GitHub Pages
-1. Buat repository baru di GitHub.
-2. Upload semua file di folder ini ke repository.
-3. Settings → Pages.
-4. Pilih `Deploy from a branch`.
-5. Pilih branch `main` dan folder `/ (root)`.
-6. Save.
-7. Buka URL GitHub Pages.
-8. Di Android Chrome pilih menu browser → **Tambahkan ke layar utama / Install app**.
+## Tes awal
+1. Masuk **Pengaturan → Muat contoh** untuk mengisi data contoh.
+2. Coba cari dan edit barang, ubah stok, dan hapus satu barang contoh.
+3. Coba kalkulator laba di menu **Tools**.
+4. Ekspor JSON sebagai backup, lalu uji impor pada kondisi data yang sudah dibackup.
+5. Uji offline setelah website dibuka online setidaknya sekali.
 
-## Catatan scanner
-Kamera browser umumnya membutuhkan HTTPS. GitHub Pages sudah HTTPS. Jika perangkat/browser tidak menyediakan `BarcodeDetector`, tombol Scan tetap menyediakan input kode manual.
-
-## Privasi
-Aplikasi ini tidak mengirim data ke API/server. Tombol WhatsApp hanya membuka URL WhatsApp ketika kamu menekan tombol WA.
+## Catatan penting
+- Data inventaris disimpan di browser/perangkat lokal melalui IndexedDB (fallback ke localStorage bila IndexedDB tidak tersedia). Tidak ada sinkronisasi antarperangkat.
+- Ekspor JSON secara rutin. Menghapus data situs/browser dapat menghapus data lokal.
+- Kamera hanya bisa dipakai pada HTTPS (misalnya GitHub Pages) dan memerlukan izin kamera.
+- Pemindaian otomatis bergantung dukungan `BarcodeDetector` pada browser. Bila tidak tersedia, gunakan input kode manual. Untuk dukungan lebih luas, integrasikan library barcode lokal yang vendored ke repo.
+- Service worker/PWA perlu dijalankan dari HTTPS atau localhost; tidak bisa diuji penuh jika file dibuka langsung dengan `file://`.
+- Ikon menggunakan SVG. Jika perangkat/browser tidak menerima SVG sebagai ikon instalasi, ganti manifest dengan ikon PNG 192×192 dan 512×512.
+- Versi awal ini tidak melakukan transaksi kasir/penjualan otomatis; pengurangan stok dapat ditambahkan pada pengembangan berikutnya.

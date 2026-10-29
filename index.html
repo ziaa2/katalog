@@ -1,98 +1,136 @@
 <!doctype html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#0b0f14">
-  <meta name="description" content="Dashboard warung pribadi offline">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#06131b">
+  <meta name="description" content="StockMate — kelola stok warung dan konter secara offline.">
   <link rel="manifest" href="manifest.json">
-  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="icon" href="icons/icon-192.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css">
-  <title>WarungKu</title>
+  <title>StockMate — Kelola Stok</title>
 </head>
 <body>
-<div id="app">
-  <header class="topbar">
-    <div><div class="brand">WarungKu</div><div class="sub">Catatan pribadi • offline</div></div>
-    <button class="icon-btn" id="themeBtn" title="Ganti tema">☼</button>
-  </header>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#beranda" aria-label="StockMate Beranda">
+        <span class="brand-mark">◆</span><span><b>StockMate</b><small>Stok aman, usaha lancar.</small></span>
+      </a>
+      <div class="offline-pill"><span class="dot"></span><span id="connectionLabel">Offline lokal</span></div>
+      <nav class="nav-list" aria-label="Navigasi utama">
+        <button class="nav-item active" data-page="beranda"><span>⌂</span> Beranda</button>
+        <button class="nav-item" data-page="barang"><span>▦</span> Barang & Stok</button>
+        <button class="nav-item" data-page="kulakan"><span>🛒</span> Kulakan</button>
+        <button class="nav-item" data-page="tools"><span>⚒</span> Tools</button>
+        <button class="nav-item" data-page="riwayat"><span>↺</span> Riwayat</button>
+        <button class="nav-item" data-page="pengaturan"><span>⚙</span> Pengaturan</button>
+      </nav>
+      <div class="sidebar-note"><span class="mini-logo">◆</span><div><b>Data tersimpan lokal</b><small>di perangkat ini</small></div></div>
+    </aside>
 
-  <main id="main">
-    <section class="page active" data-page="home">
-      <div class="hero-card">
-        <div class="muted">Laba hari ini</div>
-        <div class="big" id="todayProfit">Rp0</div>
-        <div class="profit-row"><span id="todaySales">Penjualan Rp0</span><span id="todayExpense">Pengeluaran Rp0</span></div>
-      </div>
-      <div class="stats-grid">
-        <div class="stat"><span>Transaksi</span><b id="todayTx">0</b></div>
-        <div class="stat"><span>Produk</span><b id="productCount">0</b></div>
-        <div class="stat"><span>Stok menipis</span><b id="lowStock">0</b></div>
-        <div class="stat"><span>Pelanggan</span><b id="customerCount">0</b></div>
-      </div>
-      <div class="quick-grid">
-        <button class="quick primary" data-action="sale">＋ Penjualan</button>
-        <button class="quick" data-action="profit">＋ Laba</button>
-        <button class="quick" data-action="expense">− Pengeluaran</button>
-        <button class="quick" data-action="scan">▣ Scan</button>
-      </div>
-      <div class="section-head"><h2>Ringkasan 7 hari</h2></div>
-      <div class="chart-card"><canvas id="profitChart" height="180"></canvas></div>
-      <div class="section-head"><h2>Stok menipis</h2><button class="text-btn" data-page-link="products">Lihat semua</button></div>
-      <div id="lowStockList" class="list"></div>
+    <main class="main-area">
+      <header class="topbar">
+        <button class="icon-btn mobile-menu" id="menuToggle" aria-label="Buka menu">☰</button>
+        <div><div class="eyebrow" id="pageEyebrow">WORKSPACE / STOK</div><h1 id="pageTitle">Beranda</h1></div>
+        <button class="avatar" id="quickAdd" title="Tambah barang">＋</button>
+      </header>
+
+      <section class="page active" id="page-beranda">
+        <div class="welcome-row"><div><p class="muted">Ringkasan usaha hari ini</p><h2>Halo, semangat jaga warung 👋</h2></div><span class="date-chip" id="todayLabel"></span></div>
+        <div class="stats-grid">
+          <article class="stat-card"><span class="stat-label">Total jenis barang</span><strong id="statProducts">0</strong><small>produk terdaftar</small></article>
+          <article class="stat-card warning"><span class="stat-label">Stok menipis</span><strong id="statLow">0</strong><small>perlu dicek</small></article>
+          <article class="stat-card"><span class="stat-label">Total unit stok</span><strong id="statUnits">0</strong><small>semua barang</small></article>
+          <article class="stat-card"><span class="stat-label">Nilai modal stok</span><strong id="statValue">Rp0</strong><small>perkiraan persediaan</small></article>
+        </div>
+        <div class="quick-actions">
+          <button class="primary-btn" data-action="add-product">＋ Tambah Barang</button>
+          <button class="secondary-btn" data-action="scanner">▦ Scan Barcode</button>
+          <button class="secondary-btn" data-action="stock-in">↗ Stok Masuk</button>
+        </div>
+        <div class="section-heading"><div><h3>Perlu diperhatikan</h3><p class="muted">Barang yang stoknya menyentuh batas minimum.</p></div><button class="text-btn" data-goto="barang">Lihat semua →</button></div>
+        <div id="lowStockList" class="product-list empty-state">Belum ada barang menipis.</div>
+        <div class="section-heading"><div><h3>Aktivitas terbaru</h3><p class="muted">Perubahan stok terakhir.</p></div><button class="text-btn" data-goto="riwayat">Lihat riwayat →</button></div>
+        <div id="recentActivity" class="activity-list empty-state">Belum ada aktivitas.</div>
+      </section>
+
+      <section class="page" id="page-barang">
+        <div class="toolbar"><label class="search-box">⌕ <input id="productSearch" placeholder="Cari nama atau barcode..." autocomplete="off"></label><button class="primary-btn" data-action="add-product">＋ Tambah</button></div>
+        <div class="filters"><button class="filter active" data-filter="semua">Semua</button><button class="filter" data-filter="tersedia">Tersedia</button><button class="filter" data-filter="menipis">Menipis</button><button class="filter" data-filter="warung">Warung</button><button class="filter" data-filter="konter">Konter</button></div>
+        <div id="productsList" class="product-list empty-state">Belum ada barang. Tambahkan barang pertama lu.</div>
+      </section>
+
+      <section class="page" id="page-kulakan">
+        <div class="section-heading"><div><h3>Daftar kulakan</h3><p class="muted">Catatan belanja ke agen, terpisah dari stok.</p></div><button class="primary-btn" data-action="add-shopping">＋ Tambah</button></div>
+        <div class="inline-form"><input id="shoppingName" placeholder="Nama barang yang mau dibeli"><input id="shoppingQty" type="number" min="1" value="1" aria-label="Jumlah kulakan"><button class="primary-btn" id="addShoppingBtn">Tambah</button></div>
+        <div id="shoppingList" class="shopping-list empty-state">Daftar kulakan masih kosong.</div>
+        <button class="danger-outline hidden" id="clearShopping">Hapus daftar selesai</button>
+      </section>
+
+      <section class="page" id="page-tools">
+        <div class="section-heading"><div><h3>Tools</h3><p class="muted">Modul terpisah dari sistem stok. Bisa dikembangkan lagi.</p></div></div>
+        <div class="tool-grid">
+          <button class="tool-card" data-tool="profit"><span class="tool-icon">↗</span><b>Kalkulator laba</b><small>Hitung laba per barang</small></button>
+          <button class="tool-card" data-tool="price"><span class="tool-icon">％</span><b>Kalkulator harga</b><small>Modal + target laba</small></button>
+          <button class="tool-card" data-tool="expense"><span class="tool-icon">▤</span><b>Catatan pengeluaran</b><small>Catat pengeluaran usaha</small></button>
+          <button class="tool-card" data-tool="converter"><span class="tool-icon">⇄</span><b>Banding harga</b><small>Bandingkan harga per unit</small></button>
+        </div>
+        <div id="toolWorkspace" class="tool-workspace"><div class="empty-state">Pilih salah satu tools di atas untuk mulai.</div></div>
+      </section>
+
+      <section class="page" id="page-riwayat">
+        <div class="toolbar"><label class="search-box">⌕ <input id="historySearch" placeholder="Cari aktivitas..." autocomplete="off"></label><button class="secondary-btn" id="exportHistory">Ekspor CSV</button></div>
+        <div id="historyList" class="activity-list empty-state">Belum ada riwayat.</div>
+      </section>
+
+      <section class="page" id="page-pengaturan">
+        <div class="settings-card"><div><h3>Backup data</h3><p class="muted">Simpan seluruh barang, riwayat, kulakan, dan pengeluaran ke file JSON.</p></div><button class="primary-btn" id="exportBackup">Ekspor JSON</button></div>
+        <div class="settings-card"><div><h3>Pulihkan data</h3><p class="muted">Impor file backup StockMate. Data aktif akan diganti setelah lu konfirmasi.</p></div><label class="secondary-btn file-label">Pilih file JSON<input type="file" id="importBackup" accept=".json,application/json"></label></div>
+        <div class="settings-card"><div><h3>Stok minimum</h3><p class="muted">Batas default untuk menandai stok menipis.</p></div><div class="setting-inline"><input id="defaultMinStock" type="number" min="0" value="5"><button class="primary-btn" id="saveMinStock">Simpan</button></div></div>
+        <div class="settings-card"><div><h3>Data contoh</h3><p class="muted">Isi contoh barang untuk mencoba aplikasi. Tidak akan menimpa data yang ada.</p></div><button class="secondary-btn" id="loadDemo">Muat contoh</button></div>
+        <div class="settings-card"><div><h3>Pasang aplikasi</h3><p class="muted">Buka melalui HTTPS, lalu pilih Instal aplikasi / Tambahkan ke layar utama di Chrome.</p></div><button class="secondary-btn" id="installApp" disabled>Instal aplikasi</button></div>
+        <div class="settings-card danger-zone"><div><h3>Hapus seluruh data</h3><p class="muted">Tindakan ini tidak bisa dibatalkan. Ekspor backup dulu.</p></div><button class="danger-btn" id="clearAll">Hapus data</button></div>
+        <p class="fine-print">StockMate menyimpan data di browser/perangkat ini. Bersihkan data browser atau pindah perangkat bisa menghilangkan data jika belum di-backup.</p>
+      </section>
+      <footer>StockMate <span>•</span> Kelola stok hari ini, untung lebih tertata.</footer>
+    </main>
+  </div>
+
+  <div class="modal-backdrop hidden" id="modalBackdrop">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-head"><div><p class="eyebrow">STOCKMATE / FORM</p><h2 id="modalTitle">Tambah Barang</h2></div><button class="icon-btn" id="closeModal" aria-label="Tutup">×</button></div>
+      <form id="productForm">
+        <input type="hidden" id="editProductId">
+        <div class="form-grid">
+          <label class="field full">Nama barang<input id="productName" required maxlength="100" placeholder="Contoh: Kabel data Type-C"></label>
+          <label class="field">Kategori<select id="productCategory"><option>Warung</option><option>Konter</option><option>Lainnya</option></select></label>
+          <label class="field">Barcode (opsional)<div class="input-with-btn"><input id="productBarcode" placeholder="Kode barcode"><button type="button" class="small-btn" id="scanFromForm">Scan</button></div></label>
+          <label class="field">Harga modal (Rp)<input id="productCost" type="number" min="0" step="1" required placeholder="0"></label>
+          <label class="field">Harga jual (Rp)<input id="productPrice" type="number" min="0" step="1" required placeholder="0"></label>
+          <label class="field">Stok awal / jumlah<input id="productStock" type="number" min="0" step="1" required value="0"></label>
+          <label class="field">Batas minimum<input id="productMin" type="number" min="0" step="1" value="5"></label>
+          <label class="field full">Catatan (opsional)<textarea id="productNotes" rows="2" placeholder="Merek, warna, ukuran..."></textarea></label>
+        </div>
+        <div class="form-actions"><button type="button" class="secondary-btn" id="cancelModal">Batal</button><button class="primary-btn" type="submit">Simpan barang</button></div>
+      </form>
     </section>
+  </div>
 
-    <section class="page" data-page="products">
-      <div class="page-title"><div><h1>Produk</h1><p>Harga, stok, kategori & kode scan</p></div><button class="round" data-action="product">＋</button></div>
-      <div class="search"><span>⌕</span><input id="productSearch" placeholder="Cari nama, kategori, barcode..."></div>
-      <div id="categoryChips" class="chips"></div>
-      <div id="productList" class="list"></div>
+  <div class="modal-backdrop hidden" id="scannerBackdrop">
+    <section class="modal scanner-modal" role="dialog" aria-modal="true" aria-labelledby="scannerTitle">
+      <div class="modal-head"><div><p class="eyebrow">KAMERA PERANGKAT</p><h2 id="scannerTitle">Scan Barcode</h2></div><button class="icon-btn" id="closeScanner" aria-label="Tutup">×</button></div>
+      <p class="muted">Arahkan barcode ke dalam area kamera. Kamera memerlukan HTTPS dan izin dari lu.</p>
+      <video id="scannerVideo" playsinline muted></video>
+      <div class="scan-actions"><button class="primary-btn" id="startScan">Mulai kamera</button><button class="secondary-btn" id="stopScan">Matikan kamera</button></div>
+      <label class="field">Atau masukkan kode manual<input id="manualBarcode" inputmode="numeric" placeholder="Ketik / tempel kode barcode"></label>
+      <button class="primary-btn full-btn" id="useManualBarcode">Gunakan kode</button>
+      <p id="scannerStatus" class="fine-print">Scanner menggunakan dukungan barcode bawaan browser bila tersedia.</p>
     </section>
-
-    <section class="page" data-page="transactions">
-      <div class="page-title"><div><h1>Transaksi</h1><p>Riwayat penjualan & laba</p></div><button class="round" data-action="sale">＋</button></div>
-      <div class="filter-row">
-        <button class="filter active" data-period="today">Hari ini</button>
-        <button class="filter" data-period="week">7 hari</button>
-        <button class="filter" data-period="month">Bulan</button>
-        <button class="filter" data-period="all">Semua</button>
-      </div>
-      <div id="transactionList" class="list"></div>
-    </section>
-
-    <section class="page" data-page="customers">
-      <div class="page-title"><div><h1>Pelanggan</h1><p>Nomor WhatsApp & catatan pelanggan</p></div><button class="round" data-action="customer">＋</button></div>
-      <div class="search"><span>⌕</span><input id="customerSearch" placeholder="Cari pelanggan / nomor..."></div>
-      <div id="customerList" class="list"></div>
-    </section>
-
-    <section class="page" data-page="more">
-      <div class="page-title"><div><h1>Lainnya</h1><p>Hutang, laporan dan backup</p></div></div>
-      <div class="menu-grid">
-        <button class="menu-card" data-action="debt">💳<b>Hutang / Piutang</b><small>Catat dan tandai lunas</small></button>
-        <button class="menu-card" data-action="report">📊<b>Laporan</b><small>Ringkasan keuangan</small></button>
-        <button class="menu-card" data-action="backup">💾<b>Backup</b><small>Export data ke file</small></button>
-        <button class="menu-card" data-action="restore">📥<b>Import</b><small>Pulihkan data backup</small></button>
-        <button class="menu-card" data-action="categories">🏷️<b>Kategori</b><small>Kelola kategori produk</small></button>
-        <button class="menu-card" data-action="reset">⚠️<b>Reset data</b><small>Hapus semua data lokal</small></button>
-      </div>
-      <div class="info-card"><b>100% tanpa API</b><p>Data disimpan di perangkat ini. Tidak dikirim ke server. Backup secara berkala jika data penting.</p></div>
-    </section>
-  </main>
-
-  <button class="fab" id="fab">＋</button>
-  <nav class="bottom-nav">
-    <button class="nav active" data-page-link="home">⌂<span>Home</span></button>
-    <button class="nav" data-page-link="products">▣<span>Produk</span></button>
-    <button class="nav" data-page-link="transactions">◷<span>Transaksi</span></button>
-    <button class="nav" data-page-link="customers">♙<span>Pelanggan</span></button>
-    <button class="nav" data-page-link="more">•••<span>Lainnya</span></button>
-  </nav>
-</div>
-
-<div id="modal" class="modal hidden"><div class="sheet" id="sheet"></div></div>
-<input type="file" id="restoreInput" accept=".json" hidden>
-<div id="toast" class="toast"></div>
-<script src="app.js"></script>
+  </div>
+  <div class="toast-region" id="toastRegion" aria-live="polite"></div>
+  <script src="db.js"></script>
+  <script src="scanner.js"></script>
+  <script src="tools.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
