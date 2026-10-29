@@ -81,7 +81,15 @@
       </section>
 
       <section class="page" id="page-riwayat">
-        <div class="toolbar"><label class="search-box">⌕ <input id="historySearch" placeholder="Cari aktivitas..." autocomplete="off"></label><button class="secondary-btn" id="exportHistory">Ekspor CSV</button></div>
+        <div class="toolbar"><label class="search-box">⌕ <input id="historySearch" placeholder="Cari barang atau catatan..." autocomplete="off"></label><button class="secondary-btn" id="exportHistory">Ekspor CSV</button></div>
+        <div class="history-filters">
+          <label class="field">Jenis aktivitas<select id="historyType"><option value="semua">Semua aktivitas</option><option value="penjualan">Penjualan</option><option value="masuk">Stok masuk</option><option value="keluar">Stok keluar</option><option value="koreksi">Perubahan stok</option></select></label>
+          <label class="field">Dari tanggal<input type="date" id="historyFrom"></label>
+          <label class="field">Sampai tanggal<input type="date" id="historyTo"></label>
+          <label class="field">Kategori<select id="historyCategory"><option value="semua">Semua kategori</option><option value="Warung">Warung</option><option value="Konter">Konter</option></select></label>
+          <button class="secondary-btn history-reset" id="resetHistoryFilters">Reset filter</button>
+        </div>
+        <div class="history-summary" id="historySummary">Memuat riwayat...</div>
         <div id="historyList" class="activity-list empty-state">Belum ada riwayat.</div>
       </section>
 

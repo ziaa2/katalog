@@ -25,3 +25,11 @@
 .debt-row{display:flex;align-items:center;gap:12px;padding:13px;border:1px solid var(--line);border-radius:13px;background:#0b1e29;margin-bottom:8px;min-width:0}
 .debt-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}.debt-right b{font-size:12px;color:var(--amber)}.debt-right b.debt-paid{color:var(--teal)}
 @media(max-width:700px){.debt-form{grid-template-columns:1fr;padding:13px}.debt-form .field.full{grid-column:auto}.debt-form button{width:100%}.debt-row{align-items:flex-start}.debt-summary{gap:8px}.debt-summary .stat-card{min-width:0}}
+
+
+/* Riwayat transaksi: filter rapi dan nyaman di layar HP */
+.history-filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;padding:13px;margin:0 0 12px;border:1px solid var(--line);border-radius:14px;background:#0b1e29}
+.history-filters .field{gap:6px}.history-filters input,.history-filters select{min-height:42px;font-size:12px}.history-reset{align-self:end;min-height:42px}.history-summary{font-size:11px;color:var(--muted);padding:2px 2px 12px}.history-row{align-items:flex-start}.history-row .product-main{overflow:hidden}.history-row .history-amount{color:var(--teal);font-size:10px}.history-row .activity-icon{font-size:11px;font-weight:800}
+button,.nav-item,.icon-btn,.small-btn{touch-action:manipulation;-webkit-tap-highlight-color:transparent}.nav-item{min-height:44px}.sidebar{padding-bottom:max(18px,env(safe-area-inset-bottom))}.main-area{padding-bottom:max(24px,env(safe-area-inset-bottom))}.mobile-menu{touch-action:manipulation}
+@media(max-width:700px){.history-filters{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;padding:11px}.history-filters .history-reset{grid-column:1/-1;width:100%}.history-row{flex-wrap:wrap;gap:8px}.history-row .product-main{flex-basis:calc(100% - 48px)}.history-row .delta{margin-left:43px;margin-top:-3px}.toolbar #exportHistory{white-space:nowrap;font-size:11px}.search-box input{font-size:13px;min-height:44px}.nav-item{padding-top:12px;padding-bottom:12px}}
+@media(max-width:360px){.history-filters{grid-template-columns:1fr}.history-filters .history-reset{grid-column:auto}}
