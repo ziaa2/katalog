@@ -3,7 +3,7 @@
 Aplikasi manajemen stok offline untuk warung dan konter. Dibuat dengan HTML, CSS, JavaScript, IndexedDB, dan PWA; cocok di-host lewat GitHub Pages.
 
 ## Fitur
-- Dashboard ringkasan jenis barang, stok menipis, total unit, dan nilai modal.
+- Dashboard ringkasan omzet, modal stok, jenis barang, stok menipis, serta ringkasan Warung/Konter per kategori.\n- Dashboard menampilkan maksimal 5 aktivitas terbaru; riwayat lengkap tersedia di menu Riwayat.
 - Tambah/edit/hapus barang; kategori Warung/Konter; harga modal/jual; barcode; batas minimum.
 - Stok masuk melalui form barang atau pencarian nama.
 - Tombol **Terjual** di setiap barang: masukkan jumlah terjual, stok otomatis berkurang, dan aktivitas masuk ke riwayat.
