@@ -1,14 +1,14 @@
 /* StockMate local database: IndexedDB with localStorage fallback. */
 (function(){
   const DB_NAME = "stockmate-local-v1";
-  const STORE_NAMES = ["products","history","shopping","expenses","settings"];
+  const STORE_NAMES = ["products","history","shopping","expenses","settings","debts"];
   const BACKUP_STORE = "backups";
   let dbPromise;
   function openDB(){
     if(!("indexedDB" in window)) return Promise.resolve(null);
     if(dbPromise) return dbPromise;
     dbPromise = new Promise(resolve=>{
-      const req=indexedDB.open(DB_NAME,2);
+      const req=indexedDB.open(DB_NAME,3);
       req.onupgradeneeded=()=>{
         const db=req.result;
         STORE_NAMES.forEach(name=>{if(!db.objectStoreNames.contains(name)) db.createObjectStore(name,{keyPath:"id"});});

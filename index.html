@@ -24,6 +24,7 @@
         <button class="nav-item" data-page="tools"><span>⚒</span> Tools</button>
         <button class="nav-item" data-page="riwayat"><span>↺</span> Riwayat</button>
         <button class="nav-item" data-page="laporan"><span>▥</span> Laporan omzet & laba</button>
+        <button class="nav-item" data-page="utang"><span>◷</span> Utang pelanggan</button>
         <button class="nav-item" data-page="pengaturan"><span>⚙</span> Pengaturan</button>
       </nav>
       <div class="sidebar-note"><span class="mini-logo">◆</span><div><b>Data tersimpan lokal</b><small>di perangkat ini</small></div></div>
@@ -101,6 +102,20 @@
         <div class="section-heading"><div><h3>Penjualan dalam periode</h3><p class="muted">Transaksi yang dibatalkan tidak dihitung.</p></div></div>
         <div id="reportSalesList" class="activity-list empty-state">Belum ada penjualan pada periode ini.</div>
         <p class="fine-print">Catatan: transaksi lama yang belum menyimpan harga saat transaksi memakai harga barang saat ini sebagai perkiraan, sehingga omzet dan laba historis bisa berbeda.</p>
+      </section>
+
+      <section class="page" id="page-utang">
+        <div class="section-heading"><div><h3>Catatan utang pelanggan</h3><p class="muted">Catat tagihan, pembayaran sebagian, dan sisa utang.</p></div></div>
+        <form id="debtForm" class="debt-form">
+          <label class="field">Nama pelanggan<input id="debtCustomer" required maxlength="80" placeholder="Nama pelanggan"></label>
+          <label class="field">Nominal utang (Rp)<input id="debtAmount" required type="number" min="1" step="1" placeholder="Contoh: 50000"></label>
+          <label class="field full">Keterangan (opsional)<input id="debtNote" maxlength="160" placeholder="Barang / catatan utang"></label>
+          <button class="primary-btn" type="submit">Simpan utang</button>
+        </form>
+        <div class="filters" role="group" aria-label="Filter utang"><button class="filter active" data-debt-filter="unpaid">Belum lunas</button><button class="filter" data-debt-filter="all">Semua</button></div>
+        <div id="debtSummary" class="debt-summary"></div>
+        <div id="debtList" class="activity-list empty-state">Belum ada catatan utang.</div>
+        <p class="fine-print">Catatan utang ini berdiri sendiri dan belum mengurangi stok otomatis. Untuk penjualan kredit yang langsung mengurangi stok, perlu alur transaksi khusus.</p>
       </section>
 
       <section class="page" id="page-pengaturan">

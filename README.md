@@ -55,3 +55,9 @@ Transaksi baru yang dicatat lewat tombol **Terjual** menyimpan snapshot harga ju
 - Menampilkan omzet, modal barang terjual, estimasi laba kotor, jumlah unit, dan daftar penjualan.
 - Penjualan yang ditandai dibatalkan dikecualikan.
 - Transaksi lama tanpa snapshot harga menggunakan harga barang saat ini sebagai perkiraan.
+
+## Update fitur tahap 5
+- **Batalkan penjualan:** buka menu Laporan omzet & laba, lalu tekan `Batal` pada transaksi yang ingin dibatalkan dan konfirmasi. Stok dikembalikan dan transaksi ditandai batal agar tidak masuk hitungan omzet/laba. Barang harus masih ada di daftar stok.
+- **Utang pelanggan:** buka menu Utang pelanggan, masukkan nama, nominal, dan keterangan opsional. Pembayaran bisa dicatat sebagian sampai lunas. Data utang tersimpan lokal dan ikut masuk backup JSON/backup otomatis.
+- Catatan utang tahap ini adalah pencatatan tagihan mandiri; belum membuat transaksi kredit yang mengurangi stok otomatis.
+- Database lokal ditingkatkan versinya untuk menambah penyimpanan utang; data toko yang sudah ada dipertahankan oleh IndexedDB saat upgrade.
