@@ -33,3 +33,12 @@
 button,.nav-item,.icon-btn,.small-btn{touch-action:manipulation;-webkit-tap-highlight-color:transparent}.nav-item{min-height:44px}.sidebar{padding-bottom:max(18px,env(safe-area-inset-bottom))}.main-area{padding-bottom:max(24px,env(safe-area-inset-bottom))}.mobile-menu{touch-action:manipulation}
 @media(max-width:700px){.history-filters{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;padding:11px}.history-filters .history-reset{grid-column:1/-1;width:100%}.history-row{flex-wrap:wrap;gap:8px}.history-row .product-main{flex-basis:calc(100% - 48px)}.history-row .delta{margin-left:43px;margin-top:-3px}.toolbar #exportHistory{white-space:nowrap;font-size:11px}.search-box input{font-size:13px;min-height:44px}.nav-item{padding-top:12px;padding-bottom:12px}}
 @media(max-width:360px){.history-filters{grid-template-columns:1fr}.history-filters .history-reset{grid-column:auto}}
+
+/* Laporan penjualan lanjutan */
+.report-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0;align-items:end}
+.report-controls .field{margin:0}.report-controls button{min-height:42px}
+.report-insights-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:14px;margin:18px 0}
+.report-insights-grid .panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px;min-width:0}
+.report-chart{display:grid;gap:10px}.chart-row{display:grid;grid-template-columns:52px minmax(30px,1fr) auto;gap:9px;align-items:center}.chart-row small{color:var(--muted)}.chart-row b{font-size:12px;white-space:nowrap}.chart-track{height:9px;border-radius:20px;background:var(--surface);overflow:hidden}.chart-track i{display:block;height:100%;border-radius:20px;background:var(--teal)}
+.report-top-products{display:grid;gap:12px}.top-product-row{display:flex;align-items:center;gap:10px}.top-product-row>span{width:25px;height:25px;display:grid;place-items:center;border-radius:8px;background:var(--surface);font-weight:700}.top-product-row strong{font-size:12px;white-space:nowrap}
+@media(max-width:700px){.report-controls{grid-template-columns:1fr 1fr}.report-controls button{width:100%}.report-insights-grid{grid-template-columns:1fr}.report-stats{grid-template-columns:1fr 1fr}.report-insights-grid .panel{padding:13px}}

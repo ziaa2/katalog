@@ -100,12 +100,23 @@
           <button class="filter" data-report-period="week">7 hari terakhir</button>
           <button class="filter" data-report-period="month">Bulan ini</button>
         </div>
+        <div class="report-controls">
+          <label class="field">Mulai tanggal<input type="date" id="reportFrom"></label>
+          <label class="field">Sampai tanggal<input type="date" id="reportTo"></label>
+          <label class="field">Kategori<select id="reportCategory"><option value="semua">Warung + Konter</option><option value="Warung">Warung</option><option value="Konter">Konter</option></select></label>
+          <button class="secondary-btn" id="resetReportFilters">Reset periode</button>
+          <button class="secondary-btn" id="exportReport">Ekspor laporan CSV</button>
+        </div>
         <p class="muted report-range" id="reportRange">Periode hari ini</p>
         <div class="stats-grid report-stats">
           <article class="stat-card stat-revenue"><span class="stat-label">Total omzet</span><strong id="reportRevenue">Rp0</strong><small>nilai penjualan yang tercatat</small></article>
           <article class="stat-card"><span class="stat-label">Modal barang terjual</span><strong id="reportCost">Rp0</strong><small>modal dari barang yang terjual</small></article>
           <article class="stat-card"><span class="stat-label">Laba kotor</span><strong id="reportProfit">Rp0</strong><small>omzet dikurangi modal barang</small></article>
           <article class="stat-card"><span class="stat-label">Jumlah barang terjual</span><strong id="reportUnits">0</strong><small id="reportTransactions">0 transaksi</small></article>
+        </div>
+        <div class="report-insights-grid">
+          <article class="panel"><div class="section-heading"><div><h3>Grafik omzet harian</h3><p class="muted">Akumulasi berdasarkan tanggal.</p></div></div><div id="reportChart" class="report-chart"></div></article>
+          <article class="panel"><div class="section-heading"><div><h3>Produk terlaris</h3><p class="muted">Berdasarkan jumlah unit terjual.</p></div></div><div id="reportTopProducts" class="report-top-products"></div></article>
         </div>
         <div class="section-heading"><div><h3>Penjualan dalam periode</h3><p class="muted">Transaksi yang dibatalkan tidak dihitung.</p></div></div>
         <div id="reportSalesList" class="activity-list empty-state">Belum ada penjualan pada periode ini.</div>
