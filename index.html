@@ -63,10 +63,24 @@
       </section>
 
       <section class="page" id="page-kulakan">
-        <div class="section-heading"><div><h3>Daftar kulakan</h3><p class="muted">Catatan belanja ke agen, terpisah dari stok.</p></div><button class="primary-btn" data-action="add-shopping">＋ Tambah</button></div>
-        <div class="inline-form"><input id="shoppingName" placeholder="Nama barang yang mau dibeli"><input id="shoppingQty" type="number" min="1" value="1" aria-label="Jumlah kulakan"><button class="primary-btn" id="addShoppingBtn">Tambah</button></div>
+        <div class="shopping-summary">
+          <div><small>Estimasi belanja sendiri</small><strong id="shoppingTotal">Rp0</strong><span id="shoppingProgress">0 / 0 barang dibeli</span></div>
+          <div class="shopping-progress"><i id="shoppingProgressBar"></i></div>
+        </div>
+        <div class="shopping-toolbar">
+          <div class="shopping-heading"><h3>Catatan kulakan</h3><p class="muted">Checklist belanja ke agen. Tidak mengubah stok.</p></div>
+          <button class="secondary-btn" id="shoppingPasteBtn">Tempel daftar</button>
+        </div>
+        <div class="shopping-add-card">
+          <div class="shopping-input-row"><input id="shoppingName" placeholder="Mau beli apa?" autocomplete="off"><input id="shoppingQty" type="number" min="1" value="1" aria-label="Jumlah"><button class="primary-btn" id="addShoppingBtn">＋</button></div>
+          <div class="shopping-extra-row"><input id="shoppingPrice" type="number" min="0" placeholder="Harga satuan (opsional)"><button class="secondary-btn" id="shoppingTitipBtn">📦 Titipan</button><button class="secondary-btn" id="shoppingCategoryBtn">🏷 Kategori</button></div>
+          <div id="shoppingSuggestions" class="shopping-suggestions"></div>
+        </div>
+        <div class="shopping-filters"><button class="filter active" data-shopping-filter="all">Semua</button><button class="filter" data-shopping-filter="todo">Belum dibeli</button><button class="filter" data-shopping-filter="done">Sudah dibeli</button></div>
         <div id="shoppingList" class="shopping-list empty-state">Daftar kulakan masih kosong.</div>
+        <div class="shopping-footer"><button class="secondary-btn" id="shoppingHistoryBtn">Riwayat barang</button><button class="secondary-btn" id="shoppingExportBtn">Ekspor</button><button class="secondary-btn" id="shoppingImportBtn">Impor data lama</button><input id="shoppingImportFile" type="file" accept=".json,application/json" hidden></div>
         <button class="danger-outline hidden" id="clearShopping">Hapus daftar selesai</button>
+        <p class="fine-print">Data belanja disimpan terpisah dari inventaris. Mencentang barang hanya menandai sudah dibeli, bukan menambah stok.</p>
       </section>
 
       <section class="page" id="page-tools">
